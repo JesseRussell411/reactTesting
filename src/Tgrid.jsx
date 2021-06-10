@@ -1,7 +1,7 @@
 // import React from "react";
 
 /**
- * returns the matrix (2d array of rows) transposed without modifying the original matrix.
+ * returns the given matrix (2d array of rows) transposed without modifying the original matrix.
  * @param {any[][]} matrix 2s array of rows
  * @returns {any[][]}
  */
@@ -24,8 +24,8 @@ function transpose(matrix) {
 
 /**
  * Chunks the given list of items by the given chunk size into a 2d array.
- * @param {any[]} items 
- * @param {number} chunkSize 
+ * @param {any[]} items
+ * @param {number} chunkSize
  * @returns any[][]
  */
 function chunkBySize(items, chunkSize) {
@@ -45,7 +45,7 @@ function chunkBySize(items, chunkSize) {
 
 /**
  * Chunks the given list of items by the given chunk count into a 2d array.
- * @param {any[]} items 
+ * @param {any[]} items
  * @param {number} chunkCount
  * @returns any[][]
  */
@@ -72,7 +72,22 @@ function chunkByCount(items, chunkCount) {
     return chunks;
 }
 
-const Tgrid = ({ columns, rows, columnWise = false, children }) => {
+/**
+ * 
+ * @param {number} params.columns Number of columns. Cannot be combined with rows.
+ * @param {number} params.rows Number of rows. Cannot be combined with columns.
+ * @param {number} params.columnWise Layout items top to bottom instead of left to right.
+ * @param {number} params.tableProps The rest of the props, which go to the table that is generated.
+ * @returns 
+ */
+const Tgrid = ({
+    columns,
+    rows,
+    columnWise = false,
+    children,
+    ...tableProps
+}) => {
+    // make sure items is an array.
     const items = children instanceof Array ? children : [children];
 
     // make sure columns and rows are integers.
@@ -100,7 +115,7 @@ const Tgrid = ({ columns, rows, columnWise = false, children }) => {
     }
 
     return (
-        <table>
+        <table {...tableProps}>
             <tbody>
                 {(() => {
                     if (columnWise) {
@@ -126,8 +141,6 @@ const Tgrid = ({ columns, rows, columnWise = false, children }) => {
     );
 };
 export default Tgrid;
-
-
 
 // VVVVV initial prototype VVVVV very good👌
 

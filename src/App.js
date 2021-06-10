@@ -12,7 +12,7 @@ function App() {
                     Edit <code>src/App.js</code> and save to reload.
                 </p>
                 <Tdiv>
-                    <Tgrid columns={21} columnWise={false}>
+                    <Tgrid columns={30} columnWise={false}>
                         <span>a</span>
                         <span>b</span>
                         <span>c</span>
