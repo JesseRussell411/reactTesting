@@ -1,5 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
+import Tdiv from "./Tdiv";
+import Tgrid from "./Tgrid";
 
 function App() {
   return (
@@ -9,14 +11,36 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Tdiv>
+          <Tgrid columns={3} columnWise={true}>
+          <span>a</span>
+          <span>b</span>
+          <span>c</span>
+          <span>d</span>
+          <span>e</span>
+          <span>f</span>
+          <span>g</span>
+          <span>h</span>
+          <span>i</span>
+          <span>j</span>
+          <span>k</span>
+          <span>l</span>
+          <span>m</span>
+          <span>n</span>
+          <span>o</span>
+          <span>p</span>
+          <span>q</span>
+          <span>r</span>
+          <span>s</span>
+          <span>t</span>
+          <span>u</span>
+          <span>v</span>
+          <span>w</span>
+          <span>x</span>
+          <span>y</span>
+          <span>z</span>
+          </Tgrid>
+        </Tdiv>
       </header>
     </div>
   );
