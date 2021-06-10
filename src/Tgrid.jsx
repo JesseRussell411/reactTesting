@@ -1,5 +1,10 @@
 // import React from "react";
 
+/**
+ * returns the matrix (2d array of rows) transposed without modifying the original matrix.
+ * @param {any[][]} matrix 2s array of rows
+ * @returns {any[][]}
+ */
 function transpose(matrix) {
     if (matrix.length === 0) return [];
 
@@ -17,6 +22,12 @@ function transpose(matrix) {
     return result;
 }
 
+/**
+ * Chunks the given list of items by the given chunk size into a 2d array.
+ * @param {any[]} items 
+ * @param {number} chunkSize 
+ * @returns any[][]
+ */
 function chunkBySize(items, chunkSize) {
     chunkSize = Math.min(items.length, chunkSize);
     const chunks = [];
@@ -32,6 +43,12 @@ function chunkBySize(items, chunkSize) {
     return chunks;
 }
 
+/**
+ * Chunks the given list of items by the given chunk count into a 2d array.
+ * @param {any[]} items 
+ * @param {number} chunkCount
+ * @returns any[][]
+ */
 function chunkByCount(items, chunkCount) {
     chunkCount = Math.min(items.length, chunkCount);
 
@@ -58,6 +75,7 @@ function chunkByCount(items, chunkCount) {
 const Tgrid = ({ columns, rows, columnWise = false, children }) => {
     const items = children instanceof Array ? children : [children];
 
+    // make sure columns and rows are integers.
     if (rows !== undefined) {
         rows = Math.trunc(rows);
     }
@@ -65,6 +83,7 @@ const Tgrid = ({ columns, rows, columnWise = false, children }) => {
         columns = Math.trunc(columns);
     }
 
+    // returns a <tr> full of <td>s containing the given array of items.
     function makeRow(items) {
         return (
             <tr>
@@ -74,9 +93,12 @@ const Tgrid = ({ columns, rows, columnWise = false, children }) => {
             </tr>
         );
     }
+
+    // returns the given matrix (2d array of rows) as a list of <tr>s
     function makeRows(matrix) {
         return matrix.map((r, i) => makeRow(r, i));
     }
+
     return (
         <table>
             <tbody>
