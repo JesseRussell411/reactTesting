@@ -1,13 +1,13 @@
 // import React from "react";
 
-function transpose(matrix){
+function transpose(matrix) {
     if (matrix.length === 0) return [];
 
     const result = [];
-    for(let i = 0; i < matrix[0].length; ++i){
+    for (let i = 0; i < matrix[0].length; ++i) {
         let row = [];
-        for(let j = 0; j < matrix.length; ++ j){
-            if (matrix[j] !== undefined && matrix[j][i] !== undefined){
+        for (let j = 0; j < matrix.length; ++j) {
+            if (matrix[j] !== undefined && matrix[j][i] !== undefined) {
                 row.push(matrix[j][i]);
             }
         }
@@ -17,13 +17,13 @@ function transpose(matrix){
     return result;
 }
 
-function chunkBySize(items, chunkSize){
+function chunkBySize(items, chunkSize) {
     chunkSize = Math.min(items.length, chunkSize);
     const chunks = [];
     let chunk = [];
-    for(let i = 0; i < items.length; ++i){
+    for (let i = 0; i < items.length; ++i) {
         chunk.push(items[i]);
-        if (chunk.length === chunkSize || i + 1 === items.length){
+        if (chunk.length === chunkSize || i + 1 === items.length) {
             chunks.push(chunk);
             chunk = [];
         }
@@ -32,21 +32,21 @@ function chunkBySize(items, chunkSize){
     return chunks;
 }
 
-function chunkByCount(items, chunkCount){
+function chunkByCount(items, chunkCount) {
     chunkCount = Math.min(items.length, chunkCount);
 
     const chunkSize = Math.trunc(items.length / chunkCount);
     let remainder = items.length % chunkCount;
     const chunks = [];
     let chunk = [];
-    for(let i = 0; i < items.length; ++i){
+    for (let i = 0; i < items.length; ++i) {
         chunk.push(items[i]);
-        if (chunk.length === chunkSize || i - 1 === items.length){
-            if(remainder > 0){
+        if (chunk.length === chunkSize || i - 1 === items.length) {
+            if (remainder > 0) {
                 chunk.push(items[++i]);
                 --remainder;
             }
-            
+
             chunks.push(chunk);
             chunk = [];
         }
@@ -55,48 +55,59 @@ function chunkByCount(items, chunkCount){
     return chunks;
 }
 
-const Tgrid = ({columns, rows, columnWise = false, children}) => {
+const Tgrid = ({ columns, rows, columnWise = false, children }) => {
     const items = children instanceof Array ? children : [children];
-    function makeRow(items){
+
+    if (rows !== undefined) {
+        rows = Math.trunc(rows);
+    }
+    if (columns !== undefined) {
+        columns = Math.trunc(columns);
+    }
+
+    function makeRow(items) {
         return (
-        <tr>
-            {items.map(i => <td>{i}</td>)}
-        </tr>
+            <tr>
+                {items.map((i) => (
+                    <td>{i}</td>
+                ))}
+            </tr>
         );
     }
-    function makeRows(matrix){
+    function makeRows(matrix) {
         return matrix.map((r, i) => makeRow(r, i));
     }
-return(
-    <table>
-        <tbody>
-            {(() => {
-            if (columnWise){
-                if(rows !== undefined){
-                    return makeRows(transpose(chunkBySize(items, rows)));
-                }
-                else if(columns !== undefined){
-                    return makeRows(transpose(chunkByCount(items, columns)));
-                }
-            }
-            else{
-                if(columns !== undefined){
-                    return makeRows(chunkBySize(items,columns));
-                }
-                else if (rows !== undefined){
-                    return makeRows(chunkByCount(items,rows));
-                }
-            }
-        })()}
-        </tbody>
-    </table>
-);
-}
+    return (
+        <table>
+            <tbody>
+                {(() => {
+                    if (columnWise) {
+                        if (rows !== undefined) {
+                            return makeRows(
+                                transpose(chunkBySize(items, rows))
+                            );
+                        } else if (columns !== undefined) {
+                            return makeRows(
+                                transpose(chunkByCount(items, columns))
+                            );
+                        }
+                    } else {
+                        if (columns !== undefined) {
+                            return makeRows(chunkBySize(items, columns));
+                        } else if (rows !== undefined) {
+                            return makeRows(chunkByCount(items, rows));
+                        }
+                    }
+                })()}
+            </tbody>
+        </table>
+    );
+};
 export default Tgrid;
 
 
 
-
+// VVVVV initial prototype VVVVV very good👍
 
 // import React from "react";
 
@@ -106,7 +117,6 @@ export default Tgrid;
 //     if (rows !== undefined){
 //         columns = Math.ceil(children.length / rows)
 //     }
-    
 
 //     function createRow(items, key){
 //         return <tr>
@@ -121,7 +131,7 @@ export default Tgrid;
 //             items.push(child);
 //             i++;
 //             if (i % columns === 0 || i === children.length){
-                
+
 //                 rows.push(createRow(items, rows.length));
 //                 items = [];
 //             };
@@ -132,7 +142,7 @@ export default Tgrid;
 //         const rowCount = Math.ceil(children.length / Math.min(columns, children.length));
 //         const fullRowCount = Math.trunc(children.length / Math.min(columns, children.length));
 //         console.log("fullrowcound: " + fullRowCount);
-        
+
 //         let columnList = [];
 //         let overFlow = Math.trunc(children.length % Math.min(columns, children.length));
 //         let items = [];
@@ -170,8 +180,6 @@ export default Tgrid;
 //         }
 //         return rowList;
 
-
-
 //         // let rowCount = Math.truncate(children.length / columns);
 //         // let overFlow = Math.truncate(children.length % columns);
 //         // console.log(rowCount);
@@ -189,7 +197,6 @@ export default Tgrid;
 //         // }
 //         // return rows;
 //     }
-    
 
 //     return(
 //     <table>
