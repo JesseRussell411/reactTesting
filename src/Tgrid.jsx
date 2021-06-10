@@ -55,12 +55,8 @@ function chunkByCount(items, chunkCount){
     return chunks;
 }
 
-
-
-
-
-
-const Tgrid = ({columns, rows, columnWise, children}) => {
+const Tgrid = ({columns, rows, columnWise = false, children}) => {
+    const items = children instanceof Array ? children : [children];
     function makeRow(items){
         return (
         <tr>
@@ -69,7 +65,7 @@ const Tgrid = ({columns, rows, columnWise, children}) => {
         );
     }
     function makeRows(matrix){
-        return matrix.map(r => makeRow(r));
+        return matrix.map((r, i) => makeRow(r, i));
     }
 return(
     <table>
@@ -77,18 +73,18 @@ return(
             {(() => {
             if (columnWise){
                 if(rows !== undefined){
-                    return makeRows(transpose(chunkBySize(children, rows)));
+                    return makeRows(transpose(chunkBySize(items, rows)));
                 }
                 else if(columns !== undefined){
-                    return makeRows(transpose(chunkByCount(children, columns)));
+                    return makeRows(transpose(chunkByCount(items, columns)));
                 }
             }
             else{
                 if(columns !== undefined){
-                    return makeRows(chunkBySize(children,columns));
+                    return makeRows(chunkBySize(items,columns));
                 }
                 else if (rows !== undefined){
-                    return makeRows(chunkByCount(children,rows));
+                    return makeRows(chunkByCount(items,rows));
                 }
             }
         })()}
