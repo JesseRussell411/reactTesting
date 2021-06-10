@@ -6,6 +6,7 @@
  * @returns {any[][]}
  */
 function transpose(matrix) {
+    // there is a better way of doing this in-place.
     if (matrix.length === 0) return [];
 
     const result = [];
@@ -90,12 +91,14 @@ const Tgrid = ({
     // make sure items is an array.
     const items = children instanceof Array ? children : [children];
 
-    // make sure columns and rows are integers.
+    // make sure there are valid columns or rows
     if (rows !== undefined) {
         rows = Math.trunc(rows);
-    }
-    if (columns !== undefined) {
+    } else if (columns !== undefined) {
         columns = Math.trunc(columns);
+    }
+    else{
+        columns = 1;
     }
 
     // returns a <tr> full of <td>s containing the given array of items.

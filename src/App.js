@@ -21,7 +21,6 @@ function App() {
                         <span>f</span>
                         <span>g</span>
                         <span>h</span>
-                        <span>i</span>
                         <span>j</span>
                         <span>k</span>
                         <span>l</span>
@@ -91,6 +90,7 @@ function App() {
                         <span>x</span>
                         <span>y</span>
                         <span>z</span>
+                        <img src={logo} className="App-logo" alt="logo" />
                         <span>a</span>
                         <span>b</span>
                         <span>c</span>
@@ -146,6 +146,12 @@ function App() {
                         <span>a</span>
                         <span>b</span>
                         <span>c</span>
+                        <Tgrid columns={2} style={{border:"2px solid white"}}>
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                        </Tgrid>
                         <span>d</span>
                         <span>e</span>
                         <span>f</span>
@@ -168,6 +174,7 @@ function App() {
                         <span>w</span>
                         <span>x</span>
                         <span>y</span>
+                        <img src={logo} className="App-logo" alt="logo" />
                         <span>z</span>
                         <span>a</span>
                         <span>b</span>
@@ -209,12 +216,46 @@ function App() {
                         <span>l</span>
                         <span>m</span>
                         <span>n</span>
+                        <img src={logo} className="App-logo" alt="logo" />
                         <span>o</span>
                         <span>p</span>
                         <span>q</span>
                         <span>r</span>
                         <span>s</span>
                         <span>t</span>
+                        <Tgrid columns={2} columnWise={true} style={{border:"2px solid white"}}>
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <Tgrid columns={2} style={{border:"2px solid white"}}>
+                                <img
+                                    src={logo}
+                                    className="App-logo"
+                                    alt="logo"
+                                />
+                                <img
+                                    src={logo}
+                                    className="App-logo"
+                                    alt="logo"
+                                />
+                                <img
+                                    src={logo}
+                                    className="App-logo"
+                                    alt="logo"
+                                />
+                                <img
+                                    src={logo}
+                                    className="App-logo"
+                                    alt="logo"
+                                />
+                            </Tgrid>
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                            <img src={logo} className="App-logo" alt="logo" />
+                        </Tgrid>
                         <span>u</span>
                         <span>v</span>
                         <span>w</span>
