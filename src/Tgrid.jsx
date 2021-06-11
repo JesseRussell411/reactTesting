@@ -90,12 +90,15 @@ function chunkByCount(items, chunkCount) {
 }
 
 /**
- * Table based grid for easier table layouts.
- * @param {number} params.columns Number of columns. Cannot be combined with rows.
- * @param {number} params.rows Number of rows. Cannot be combined with columns.
- * @param {boolean} params.columnWise Layout items top to bottom instead of left to right.
- * @param {object} params.trProps Props given to every <tr> in the generated table.
- * @param {object} params.tdProps Props given to every <td> in the generated table.
+ * Table based grid for easier table layouts. Just specify how many columns or rows you want
+ * and the component will render into a table with its children layed out with that many columns or rows.
+ * If you want the components layed out vertically, set the columnWise flag to true.
+ * @param {number} [params.columns = undefined] Number of columns. Cannot be combined with rows.
+ * @param {number} [params.rows = undefined] Number of rows. Cannot be combined with columns.
+ * @param {boolean} [params.columnWise = false] Layout items top to bottom instead of left to right.
+ * @param {object} [params.trProps = {}] Props given to every <tr> in the generated table.
+ * @param {object} [params.tdProps = {}] Props given to every <td> in the generated table except <td>s passed into the table with the detectTd flag true.
+ * @param {boolean} [params.detectTd = true] if true, <td> and <th> children are not wrapped in <td>s.
  * @param params.tableProps The rest of the props, which go to the table that is generated.
  * @returns
  */
@@ -105,6 +108,7 @@ const Tgrid = ({
     columnWise = false,
     trProps = {},
     tdProps = {},
+    detectTd = true,
     children,
     ...tableProps
 }) => {
@@ -123,10 +127,8 @@ const Tgrid = ({
     // returns a <tr> full of <td>s containing the given array of items.
     function makeRow(items) {
         return (
-            <tr style={{padding:"20px"}} {...trProps}>
-                {items.map((i) => (
-                    <td{...tdProps}>{i}</td>
-                ))}
+            <tr trProps>
+                {detectTd && items.map((i) => ["td", "th"].includes(i.type) ? i : <td>{i}</td>)}
             </tr>
         );
     }
@@ -138,25 +140,23 @@ const Tgrid = ({
 
     return (
         <table {...tableProps}>
-                {(() => {
-                    if (columnWise) {
-                        if (rows !== undefined) {
-                            return makeRows(
-                                transpose(chunkBySize(items, rows))
-                            );
-                        } else if (columns !== undefined) {
-                            return makeRows(
-                                transpose(chunkByCount(items, columns))
-                            );
-                        }
-                    } else {
-                        if (columns !== undefined) {
-                            return makeRows(chunkBySize(items, columns));
-                        } else if (rows !== undefined) {
-                            return makeRows(chunkByCount(items, rows));
-                        }
+            {(() => {
+                if (columnWise) {
+                    if (rows !== undefined) {
+                        return makeRows(transpose(chunkBySize(items, rows)));
+                    } else if (columns !== undefined) {
+                        return makeRows(
+                            transpose(chunkByCount(items, columns))
+                        );
                     }
-                })()}
+                } else {
+                    if (columns !== undefined) {
+                        return makeRows(chunkBySize(items, columns));
+                    } else if (rows !== undefined) {
+                        return makeRows(chunkByCount(items, rows));
+                    }
+                }
+            })()}
         </table>
     );
 };
