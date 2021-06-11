@@ -1,4 +1,17 @@
-// import React from "react";
+import React from "react";
+
+/**
+ * Guarantied to return an integer that is 1 or greater. Returns 1 on invalid input.
+ * @param number
+ * @returns {number} 1 <= n < infinity
+ */
+function sanitizeToPositiveInteger(number) {
+    if (typeof number === "number") {
+        return Math.max(1, Math.abs(Math.trunc(number)));
+    } else {
+        return 1;
+    }
+}
 
 /**
  * returns the given matrix (2d array of rows) transposed without modifying the original matrix.
@@ -30,7 +43,8 @@ function transpose(matrix) {
  * @returns {any[][]}
  */
 function chunkBySize(items, chunkSize) {
-    chunkSize = Math.min(items.length, chunkSize);
+    chunkSize = Math.min(items.length, sanitizeToPositiveInteger(chunkSize));
+
     const chunks = [];
     let chunk = [];
     for (let i = 0; i < items.length; ++i) {
@@ -51,16 +65,16 @@ function chunkBySize(items, chunkSize) {
  * @returns {any[][]}
  */
 function chunkByCount(items, chunkCount) {
-    chunkCount = Math.min(items.length, chunkCount);
+    chunkCount = Math.min(items.length, sanitizeToPositiveInteger(chunkCount));
 
     const chunkSize = Math.trunc(items.length / chunkCount);
-    let remainder = items.length % chunkCount;
+    let remainder = Math.trunc(items.length % chunkCount);
     const chunks = [];
     let chunk = [];
     for (let i = 0; i < items.length; ++i) {
         chunk.push(items[i]);
         if (chunk.length === chunkSize || i + 1 === items.length) {
-            if (remainder > 0) {
+            if (remainder > 0 && i + 1 < items.length) {
                 chunk.push(items[++i]);
                 --remainder;
             }
@@ -93,9 +107,9 @@ const Tgrid = ({
 
     // make sure there are valid columns or rows
     if (rows !== undefined) {
-        rows = Math.trunc(rows);
+        rows = Math.abs(Math.trunc(rows));
     } else if (columns !== undefined) {
-        columns = Math.trunc(columns);
+        columns = Math.abs(Math.trunc(columns));
     } else {
         columns = 1;
     }
