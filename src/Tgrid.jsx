@@ -20,6 +20,8 @@ function sanitizeToPositiveInteger(number) {
  */
 function transpose(matrix) {
     // there is a better way of doing this in-place.
+
+    // empty matrix is really easy
     if (matrix.length === 0) return [];
 
     const result = [];
@@ -92,6 +94,8 @@ function chunkByCount(items, chunkCount) {
  * @param {number} params.columns Number of columns. Cannot be combined with rows.
  * @param {number} params.rows Number of rows. Cannot be combined with columns.
  * @param {boolean} params.columnWise Layout items top to bottom instead of left to right.
+ * @param {object} params.trProps Props given to every <tr> in the generated table.
+ * @param {object} params.tdProps Props given to every <td> in the generated table.
  * @param params.tableProps The rest of the props, which go to the table that is generated.
  * @returns
  */
@@ -99,6 +103,8 @@ const Tgrid = ({
     columns,
     rows,
     columnWise = false,
+    trProps = {},
+    tdProps = {},
     children,
     ...tableProps
 }) => {
@@ -117,9 +123,9 @@ const Tgrid = ({
     // returns a <tr> full of <td>s containing the given array of items.
     function makeRow(items) {
         return (
-            <tr>
+            <tr style={{padding:"20px"}} {...trProps}>
                 {items.map((i) => (
-                    <td>{i}</td>
+                    <td{...tdProps}>{i}</td>
                 ))}
             </tr>
         );
@@ -132,7 +138,6 @@ const Tgrid = ({
 
     return (
         <table {...tableProps}>
-            <tbody>
                 {(() => {
                     if (columnWise) {
                         if (rows !== undefined) {
@@ -152,7 +157,6 @@ const Tgrid = ({
                         }
                     }
                 })()}
-            </tbody>
         </table>
     );
 };
