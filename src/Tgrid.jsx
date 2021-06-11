@@ -117,9 +117,9 @@ const Tgrid = ({
 
     // make sure there are valid columns or rows
     if (rows !== undefined) {
-        rows = Math.abs(Math.trunc(rows));
+        rows = sanitizeToPositiveInteger(rows);
     } else if (columns !== undefined) {
-        columns = Math.abs(Math.trunc(columns));
+        columns = sanitizeToPositiveInteger(columns);
     } else {
         columns = 1;
     }
