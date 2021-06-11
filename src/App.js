@@ -5,318 +5,66 @@ import Tgrid from "./Tgrid";
 
 function App() {
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <Tdiv>
-                    <Tgrid columns={30} columnWise={false}>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <img src={logo} className="App-logo" alt="logo" />
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <Tgrid columns={2} style={{border:"2px solid white"}}>
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                        </Tgrid>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <img src={logo} className="App-logo" alt="logo" />
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <img src={logo} className="App-logo" alt="logo" />
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <Tgrid columns={2} columnWise={true} style={{border:"2px solid white"}}>
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <Tgrid columns={2} style={{border:"2px solid white"}}>
-                                <img
-                                    src={logo}
-                                    className="App-logo"
-                                    alt="logo"
-                                />
-                                <img
-                                    src={logo}
-                                    className="App-logo"
-                                    alt="logo"
-                                />
-                                <img
-                                    src={logo}
-                                    className="App-logo"
-                                    alt="logo"
-                                />
-                                <img
-                                    src={logo}
-                                    className="App-logo"
-                                    alt="logo"
-                                />
-                            </Tgrid>
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <img src={logo} className="App-logo" alt="logo" />
-                        </Tgrid>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
-                        <span>g</span>
-                        <span>h</span>
-                        <span>i</span>
-                        <span>j</span>
-                        <span>k</span>
-                        <span>l</span>
-                        <span>m</span>
-                        <span>n</span>
-                        <span>o</span>
-                        <span>p</span>
-                        <span>q</span>
-                        <span>r</span>
-                        <span>s</span>
-                        <span>t</span>
-                        <span>u</span>
-                        <span>v</span>
-                        <span>w</span>
-                        <span>x</span>
-                        <span>y</span>
-                        <span>z</span>
-                    </Tgrid>
-                </Tdiv>
-            </header>
+        <div>
+            <Tgrid width="100%">
+                <td align="left">
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    <h2>Header</h2>
+                    <p style={{ textAlign: "justify" }}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi ut aliquipex ea
+                        commodo consequat.
+                    </p>
+                    <p style={{ textAlign: "justify" }}>
+                        Duis aute irure dolor in reprehenderit in voluptate
+                        velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in
+                        culpa qui officia deserunt mollit anim id estlaborum. Ut
+                        enim ad minim veniam.
+                    </p>
+                </td>
+                <Tgrid rows={1}>
+                    <td>
+                        <img
+                            src="https://picsum.photos/300/100?image=15"
+                            alt="picsum"
+                            width="300"
+                        />
+                        <h2>Left column</h2>
+                        <p style={{ textAlign: "justify" }}>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit, sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Ut enim ad minim veniam, quis
+                            nostrud exercitation ullamco laboris nisi ut aliquip
+                            ex ea consequat.
+                        </p>
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;
+                    </td>
+                    <td>
+                        <img
+                            src="https://picsum.photos/300/100?image=10"
+                            alt="picsum"
+                            width="300"
+                        />
+                        <h2>Right column</h2>
+                        <p style={{ textAlign: "justify" }}>
+                            Duis aute irure dolor in reprehenderit in voluptate
+                            velit esse cillum dolore eu fugiat nulla pariatur.
+                            Excepteur sint occaecat cupidatat non proident, sunt
+                            in culpa qui officia deserunt mollit anim id est
+                            laborum. Ut enim ad minim veniam.
+                        </p>
+                    </td>
+                </Tgrid>
+            </Tgrid>
         </div>
     );
 }

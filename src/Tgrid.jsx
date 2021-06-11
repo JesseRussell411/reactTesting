@@ -128,7 +128,16 @@ const Tgrid = ({
     function makeRow(items) {
         return (
             <tr {...trProps}>
-                {detectTd && items.map((i) => ["td", "th"].includes(i.type) ? i : <td {...tdProps}>{i}</td>)}
+                {items.map((i) =>
+                    detectTd &&
+                    ["td", "th"].includes(
+                        typeof i === "object" ? i.type : undefined
+                    ) ? (
+                        i
+                    ) : (
+                        <td {...tdProps}>{i}</td>
+                    )
+                )}
             </tr>
         );
     }
@@ -140,23 +149,27 @@ const Tgrid = ({
 
     return (
         <table {...tableProps}>
-            {(() => {
-                if (columnWise) {
-                    if (rows !== undefined) {
-                        return makeRows(transpose(chunkBySize(items, rows)));
-                    } else if (columns !== undefined) {
-                        return makeRows(
-                            transpose(chunkByCount(items, columns))
-                        );
+            <tbody>
+                {(() => {
+                    if (columnWise) {
+                        if (rows !== undefined) {
+                            return makeRows(
+                                transpose(chunkBySize(items, rows))
+                            );
+                        } else if (columns !== undefined) {
+                            return makeRows(
+                                transpose(chunkByCount(items, columns))
+                            );
+                        }
+                    } else {
+                        if (columns !== undefined) {
+                            return makeRows(chunkBySize(items, columns));
+                        } else if (rows !== undefined) {
+                            return makeRows(chunkByCount(items, rows));
+                        }
                     }
-                } else {
-                    if (columns !== undefined) {
-                        return makeRows(chunkBySize(items, columns));
-                    } else if (rows !== undefined) {
-                        return makeRows(chunkByCount(items, rows));
-                    }
-                }
-            })()}
+                })()}
+            </tbody>
         </table>
     );
 };
