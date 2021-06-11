@@ -27,7 +27,7 @@ function transpose(matrix) {
  * Chunks the given list of items by the given chunk size into a 2d array.
  * @param {any[]} items
  * @param {number} chunkSize
- * @returns any[][]
+ * @returns {any[][]}
  */
 function chunkBySize(items, chunkSize) {
     chunkSize = Math.min(items.length, chunkSize);
@@ -48,7 +48,7 @@ function chunkBySize(items, chunkSize) {
  * Chunks the given list of items by the given chunk count into a 2d array.
  * @param {any[]} items
  * @param {number} chunkCount
- * @returns any[][]
+ * @returns {any[][]}
  */
 function chunkByCount(items, chunkCount) {
     chunkCount = Math.min(items.length, chunkCount);
@@ -77,8 +77,8 @@ function chunkByCount(items, chunkCount) {
  * Table based grid for easier table layouts.
  * @param {number} params.columns Number of columns. Cannot be combined with rows.
  * @param {number} params.rows Number of rows. Cannot be combined with columns.
- * @param {number} params.columnWise Layout items top to bottom instead of left to right.
- * @param {number} params.tableProps The rest of the props, which go to the table that is generated.
+ * @param {boolean} params.columnWise Layout items top to bottom instead of left to right.
+ * @param params.tableProps The rest of the props, which go to the table that is generated.
  * @returns
  */
 const Tgrid = ({
