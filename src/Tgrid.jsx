@@ -59,7 +59,7 @@ function chunkByCount(items, chunkCount) {
     let chunk = [];
     for (let i = 0; i < items.length; ++i) {
         chunk.push(items[i]);
-        if (chunk.length === chunkSize || i - 1 === items.length) {
+        if (chunk.length === chunkSize || i + 1 === items.length) {
             if (remainder > 0) {
                 chunk.push(items[++i]);
                 --remainder;
@@ -74,12 +74,12 @@ function chunkByCount(items, chunkCount) {
 }
 
 /**
- * 
+ * Table based grid for easier table layouts.
  * @param {number} params.columns Number of columns. Cannot be combined with rows.
  * @param {number} params.rows Number of rows. Cannot be combined with columns.
  * @param {number} params.columnWise Layout items top to bottom instead of left to right.
  * @param {number} params.tableProps The rest of the props, which go to the table that is generated.
- * @returns 
+ * @returns
  */
 const Tgrid = ({
     columns,
@@ -96,8 +96,7 @@ const Tgrid = ({
         rows = Math.trunc(rows);
     } else if (columns !== undefined) {
         columns = Math.trunc(columns);
-    }
-    else{
+    } else {
         columns = 1;
     }
 
