@@ -2,10 +2,24 @@ import logo from "./logo.svg";
 import "./App.css";
 import Tdiv from "./Tdiv";
 import Tgrid from "./Tgrid";
+import Table from "./Table";
+import Tr from "./Tr";
 
 function App() {
     return (
         <div>
+          <Table border={1}>
+            <Tr><th>HelloWorld!</th></Tr>
+            <Tr><img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />LOOK!<td>It's a picture!</td></Tr>
+          </Table>
+
+
+
+
             <Tgrid width="100%">
                 <td align="left">
                     <img
