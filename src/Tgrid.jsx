@@ -125,17 +125,17 @@ const Tgrid = ({
     }
 
     // returns a <tr> full of <td>s containing the given array of items.
-    function makeRow(items) {
+    function makeRow(items, key) {
         return (
-            <tr {...trProps}>
-                {items.map((i) =>
+            <tr key={key} {...trProps}>
+                {items.map((i, index) =>
                     detectTd &&
                     ["td", "th"].includes(
                         typeof i === "object" ? i.type : undefined
                     ) ? (
                         i
                     ) : (
-                        <td {...tdProps}>{i}</td>
+                        <td key={index} {...tdProps}>{i}</td>
                     )
                 )}
             </tr>
