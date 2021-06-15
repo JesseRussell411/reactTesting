@@ -2,7 +2,7 @@ import React from "react";
 import Tr from "./Tr";
 
 const Table = ({ children, tdProps={}, ...otherProps }) => {
-    let items = children instanceof Array ? children : [...children];
+    let items = children instanceof Array ? children : [children];
     const headRows = [];
     const bodyRows = [];
     const footRows = [];

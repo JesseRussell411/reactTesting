@@ -6,39 +6,526 @@ import Table from "./Table";
 import Tr from "./Tr";
 import Sflex from "./Sflex";
 import Dbox from "./Dbox";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
+const containerWidth = 700;
+const columnSpacing = 20;
 
 function App() {
     return (
         <div>
-            <Tgrid rows={5} columnWise={true} cellPadding={0} cellSpacing={0} tdProps={{style:{border:"1px solid black", margin:"-1px"}}} >
-              <span>a</span>
-              <span>b</span>
-              <span>c</span>
-              <span>d</span>
-              <span>e</span>
-              <span>f</span>
-              <span>g</span>
-              <span>h</span>
-              <span>i</span>
-              <span>j</span>
-              <span>k</span>
-              <span>l</span>
-              <span>m</span>
-              <span>n</span>
-              <span>o</span>
-              <span>p</span>
-              <span>q</span>
-              <span>r</span>
-              <span>s</span>
-              <span>t</span>
-              <span>u</span>
-              <span>v</span>
-              <span>w</span>
-              <span>x</span>
-              <span>y</span>
-              <span>z</span>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                    <tr>
+                        <td>a thing</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <Tgrid rows={10}>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
+                <>another thing</>
             </Tgrid>
-            <Table tdProps={{style:{border:"1px solid black"}}}>
+            <Tgrid
+                rows={3}
+                tdProps={{
+                    style: {
+                        display: "inline-block",
+                        width: "200px",
+                        padding: "2px",
+                        border: "1px dashed black",
+                    },
+                }}
+            >
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+                <span>
+                    <img
+                        src="https://picsum.photos/600/100?image=14"
+                        alt="picsum"
+                        width="100%"
+                    />
+                    This is an image
+                </span>
+            </Tgrid>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                        <td
+                            style={{
+                                display: "inline-block",
+                                width: "200px",
+                                padding: "2px",
+                                border: "1px solid black",
+                            }}
+                        >
+                            <img
+                                src="https://picsum.photos/600/100?image=14"
+                                alt="picsum"
+                                width="100%"
+                            />
+                            This is an image
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <Tgrid
+                columns={95}
+                columnWise={true}
+                tdProps={{
+                    style: {
+                        height: "20px",
+                        width: "20px",
+                        textAlign: "center",
+                    },
+                }}
+                injectTdProps={true}
+            >
+                {(() => {
+                    let result = [];
+                    for (let i = 0; i < 100; ++i) {
+                        
+                            result.push(<td>a</td>);
+                            result.push(<td>b</td>);
+                            result.push(<td>c</td>);
+                            result.push(<td>d</td>);
+                            result.push(<td>e</td>);
+                            result.push(<td>f</td>);
+                            result.push(<td>g</td>);
+                            result.push(<td>h</td>);
+                            result.push(<td>i</td>);
+                            result.push(<td>j</td>);
+                            result.push(<td>k</td>);
+                            result.push(<td>l</td>);
+                            result.push(<td>m</td>);
+                            result.push(<td>n</td>);
+                            result.push(<td>o</td>);
+                            result.push(<td>p</td>);
+                            result.push(<td>q</td>);
+                            result.push(<td>r</td>);
+                            result.push(<td>s</td>);
+                            result.push(<td>t</td>);
+                            result.push(<td>u</td>);
+                            result.push(<td>v</td>);
+                            result.push(<td>w</td>);
+                            result.push(<td>x</td>);
+                            result.push(<td>y</td>);
+                            result.push(<td>z</td>);
+                        
+                    }
+                    return result;
+                })()}
+            </Tgrid>
+            <Table tdProps={{ style: { border: "1px solid black" } }}>
                 <thead>
                     <Tr>
                         <td>bob</td>
@@ -59,8 +546,9 @@ function App() {
                 </Tr>
             </Table>
 
-            <Tgrid width="100%">
-                <td align="left">
+            <Tgrid columns={3} style={{ width: "90%", margin: "auto" }}>
+                <td></td>
+                <td align="left" width={"800px"}>
                     <img
                         src="https://picsum.photos/600/100?image=14"
                         alt="picsum"
@@ -82,8 +570,14 @@ function App() {
                         enim ad minim veniam.
                     </p>
                 </td>
-                <Sflex style={{width:"100%"}}>
-                    <Dbox width="40%" >
+                <td></td>
+                <td></td>
+                <Tgrid
+                    tdProps={{
+                        style: { display: "inline-block", width: "400px" },
+                    }}
+                >
+                    <span>
                         <img
                             src="https://picsum.photos/300/100?image=15"
                             alt="picsum"
@@ -97,8 +591,8 @@ function App() {
                             nostrud exercitation ullamco laboris nisi ut aliquip
                             ex ea consequat.
                         </p>
-                    </Dbox>
-                    <Dbox width="40%">
+                    </span>
+                    <span>
                         <img
                             src="https://picsum.photos/300/100?image=10"
                             alt="picsum"
@@ -112,8 +606,9 @@ function App() {
                             in culpa qui officia deserunt mollit anim id est
                             laborum. Ut enim ad minim veniam.
                         </p>
-                    </Dbox>
-                </Sflex>
+                    </span>
+                </Tgrid>
+                <td></td>
             </Tgrid>
         </div>
     );

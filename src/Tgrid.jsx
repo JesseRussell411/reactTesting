@@ -3,7 +3,7 @@ import React from "react";
 /**
  * Guarantied to return an integer that is 1 or greater. Returns 1 on invalid input.
  * @param number
- * @returns {number} 1 <= n < infinity
+ * @returns {number} 1 <= (n is integer) < infinity
  */
 function sanitizeToPositiveInteger(number) {
     if (typeof number === "number") {
@@ -19,14 +19,15 @@ function sanitizeToPositiveInteger(number) {
  * @returns {any[][]}
  */
 function transpose(matrix) {
-    // there is a better way of doing this in-place.
-
     // empty matrix is really easy
     if (matrix.length === 0) return [];
 
+    // there is a better way of doing this in-place. But this will do.
     const result = [];
+    // main loop
     for (let i = 0; i < matrix[0].length; ++i) {
         let row = [];
+
         for (let j = 0; j < matrix.length; ++j) {
             if (matrix[j] !== undefined && matrix[j][i] !== undefined) {
                 row.push(matrix[j][i]);
@@ -45,12 +46,17 @@ function transpose(matrix) {
  * @returns {any[][]}
  */
 function chunkBySize(items, chunkSize) {
+    // make sure we don't try to make a chunk that's bigger than the whole list.
     chunkSize = Math.min(items.length, sanitizeToPositiveInteger(chunkSize));
 
     const chunks = [];
     let chunk = [];
+    // main loop
     for (let i = 0; i < items.length; ++i) {
+        // add the item to the new chunk
         chunk.push(items[i]);
+
+        // if the chunk is big enough...
         if (chunk.length === chunkSize || i + 1 === items.length) {
             chunks.push(chunk);
             chunk = [];
@@ -61,27 +67,40 @@ function chunkBySize(items, chunkSize) {
 }
 
 /**
- * Chunks the given list of items by the given chunk count into a 2d array.
+ * Chunks the given list of items by the given chunk count into a 2d array. Any remainder is spread out across the first chunks.
  * @param {any[]} items
  * @param {number} chunkCount
  * @returns {any[][]}
  */
 function chunkByCount(items, chunkCount) {
+    // make sure we don't try to make more chunks than the list has items.
     chunkCount = Math.min(items.length, sanitizeToPositiveInteger(chunkCount));
 
+    // The way this function works is it gets how big each chunk needs to be in order to end up with "chunkCount" chunks from items.
     const chunkSize = Math.trunc(items.length / chunkCount);
+    // And the remainder
     let remainder = Math.trunc(items.length % chunkCount);
+
     const chunks = [];
     let chunk = [];
+
+    // main loop
     for (let i = 0; i < items.length; ++i) {
+        // add the current item to the chunk
         chunk.push(items[i]);
+
+        // if the chunk is big enough...
         if (chunk.length === chunkSize || i + 1 === items.length) {
+            // spreading out the remainder
             if (remainder > 0 && i + 1 < items.length) {
                 chunk.push(items[++i]);
                 --remainder;
             }
 
+            // adding the finished new chunk to the list of chunks
             chunks.push(chunk);
+
+            // chunk.clear()
             chunk = [];
         }
     }
@@ -109,6 +128,7 @@ const Tgrid = ({
     trProps = {},
     tdProps = {},
     detectTd = true,
+    injectTdProps = false,
     children,
     ...tableProps
 }) => {
@@ -121,11 +141,23 @@ const Tgrid = ({
     } else if (columns !== undefined) {
         columns = sanitizeToPositiveInteger(columns);
     } else {
-        columns = 1;
+        rows = 1;
     }
 
     // returns a <tr> full of <td>s containing the given array of items.
     function makeRow(items, key) {
+        if (injectTdProps && detectTd) {
+            items.map((item, i) => {
+                if (typeof item === "object" && item.type === "td") {
+                    let td = { ...item };
+                    td.props = { ...item.props, ...tdProps };
+                    Object.preventExtensions(td);
+                    Object.preventExtensions(td.props);
+                    items[i] = td;
+                }
+            });
+        }
+
         return (
             <tr key={key} {...trProps}>
                 {items.map((i, index) =>
@@ -135,7 +167,9 @@ const Tgrid = ({
                     ) ? (
                         i
                     ) : (
-                        <td key={index} {...tdProps}>{i}</td>
+                        <td key={index} {...tdProps}>
+                            {i}
+                        </td>
                     )
                 )}
             </tr>
