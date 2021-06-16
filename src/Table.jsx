@@ -1,6 +1,10 @@
 import React from "react";
 import Tr from "./Tr";
 
+/**
+ * Acts just like <table>, but will wrap elements in <tbody> for you, or even <tbody> and <tr> and <td>.
+ * Example of valid use: <Table><img src="..." alt="..."/><img src="..." alt="..."/></Table> produces <table><tbody><tr><td><img src="..." alt="..."/><img src="..." alt="..."/></td></tr></tbody></table>
+ */
 const Table = ({ children, tdProps={}, ...otherProps }) => {
     let items = children instanceof Array ? children : [children];
     const headRows = [];

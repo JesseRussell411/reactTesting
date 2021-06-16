@@ -11,6 +11,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 const containerWidth = 700;
 const columnSpacing = 20;
 
+
 function App() {
     return (
         <div>
@@ -486,6 +487,7 @@ function App() {
                         height: "20px",
                         width: "20px",
                         textAlign: "center",
+                        display:"inline-block",
                     },
                 }}
                 injectTdProps={true}
@@ -494,32 +496,32 @@ function App() {
                     let result = [];
                     for (let i = 0; i < 100; ++i) {
                         
-                            result.push(<td>a</td>);
-                            result.push(<td>b</td>);
-                            result.push(<td>c</td>);
-                            result.push(<td>d</td>);
-                            result.push(<td>e</td>);
-                            result.push(<td>f</td>);
-                            result.push(<td>g</td>);
-                            result.push(<td>h</td>);
-                            result.push(<td>i</td>);
-                            result.push(<td>j</td>);
-                            result.push(<td>k</td>);
-                            result.push(<td>l</td>);
-                            result.push(<td>m</td>);
-                            result.push(<td>n</td>);
-                            result.push(<td>o</td>);
-                            result.push(<td>p</td>);
-                            result.push(<td>q</td>);
-                            result.push(<td>r</td>);
-                            result.push(<td>s</td>);
-                            result.push(<td>t</td>);
-                            result.push(<td>u</td>);
-                            result.push(<td>v</td>);
-                            result.push(<td>w</td>);
-                            result.push(<td>x</td>);
-                            result.push(<td>y</td>);
-                            result.push(<td>z</td>);
+                            result.push(<>a</>);
+                            result.push(<>b</>);
+                            result.push(<>c</>);
+                            result.push(<>d</>);
+                            result.push(<>e</>);
+                            result.push(<>f</>);
+                            result.push(<>g</>);
+                            result.push(<>h</>);
+                            result.push(<>i</>);
+                            result.push(<>j</>);
+                            result.push(<>k</>);
+                            result.push(<>l</>);
+                            result.push(<>m</>);
+                            result.push(<>n</>);
+                            result.push(<>o</>);
+                            result.push(<>p</>);
+                            result.push(<>q</>);
+                            result.push(<>r</>);
+                            result.push(<>s</>);
+                            result.push(<>t</>);
+                            result.push(<>u</>);
+                            result.push(<>v</>);
+                            result.push(<>w</>);
+                            result.push(<>x</>);
+                            result.push(<>y</>);
+                            result.push(<>z</>);
                         
                     }
                     return result;
