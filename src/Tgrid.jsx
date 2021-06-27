@@ -15,7 +15,7 @@ function sanitizeToPositiveInteger(number) {
 
 /**
  * returns the given matrix (2d array of rows) transposed without modifying the original matrix.
- * @param {any[][]} matrix 2s array of rows
+ * @param {any[][]} matrix 2d array of rows
  * @returns {any[][]}
  */
 function transpose(matrix) {
