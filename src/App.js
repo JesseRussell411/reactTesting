@@ -15,6 +15,32 @@ const columnSpacing = 20;
 function App() {
     return (
         <div>
+            <Table>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+            </Table>
             <table>
                 <tbody>
                     <tr>
