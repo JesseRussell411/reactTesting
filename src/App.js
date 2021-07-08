@@ -7,29 +7,54 @@ import Tr from "./Tr";
 import Sflex from "./Sflex";
 import Dbox from "./Dbox";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import {Stopwatch} from "./utils/Stopwatch";
+import { useEffect, useState } from "react";
 
 const containerWidth = 700;
 const columnSpacing = 20;
 
 
 function App() {
+    const [stopwatchCurrentTime, setStopwatchCurrentTime ]= useState(0);
+    const [stopwatch] = useState(new Stopwatch());
+    useEffect(() => {
+        stopwatch.restart()
+        setInterval(() => setStopwatchCurrentTime(stopwatch.elapsedTimeInMilliseconds), 100);
+    }, [])
     return (
         <div>
+            <>{stopwatchCurrentTime}</>
             <Table>
+                <tbody>
+                    a thing<></>
+                    a thing<></>
+                    a thing<></>
+                    <tfoot>
+                    a thing<></>
+                    a thing<></>
+                    </tfoot>
                     a thing<></>
                     a thing<></>
                     a thing<></>
                     a thing<></>
                     a thing<></>
+                    </tbody>
+                    <thead>
                     a thing<></>
                     a thing<></>
                     a thing<></>
                     a thing<></>
+                    </thead>
+                    a thing<></>
+                    <tbody>
                     a thing<></>
                     a thing<></>
                     a thing<></>
+                    </tbody>
+                    <tfoot>
                     a thing<></>
                     a thing<></>
+                    </tfoot>
                     a thing<></>
                     a thing<></>
                     a thing<></>
