@@ -25,8 +25,16 @@ function makeToPrint(listOfComps) {
 }
 
 function useObject(object) {
+    // stores object in array because it's reference, like object, but might be more efficient.
     const [state, setState] = useState([object]);
 
+    /**
+     * Let react know that the object has changed and that is should re-render whatever is using it.
+     * @param {Function | Object | undefined} x optional function or object passed to update to modify the object and update in one go.
+     * If undefined: updates the state.
+     * If Object: iterates through the object's fields, modifying each one in the state, then updates the state.
+     * If function: runs the function (with await incase of async), then recursively calls update again on the result.
+     */
     const update = async (x) => {
         if (x instanceof Function) {
             // recursive call on result
@@ -57,10 +65,7 @@ const App = () => {
             <p>{someObject.foo}</p>
             <button
                 onClick={() =>
-                    updateSomeObject(async () => {
-                        await sleep(3000);
-                        return {foo: "peanuts"};
-                    })
+                    updateSomeObject(() => someObject.foo = "peanuts")
                 }
             >
                 click for peanuts
