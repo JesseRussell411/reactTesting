@@ -28,10 +28,12 @@ function useObject(object) {
     const [state, setState] = useState([object]);
 
     const update = async (x) => {
-        if (typeof x === "function") {
-            await x();
+        if (x instanceof Function) {
+            // recursive call on result
+            update(await x());
+            return;
         }
-        else if (x instanceof Object) {
+        else if (x instanceof Object && x !== state[0]) {
             for (const field in x) {
                 state[0][field] = x[field];
             }
@@ -42,6 +44,9 @@ function useObject(object) {
     return [state[0], update];
 }
 
+async function sleep(timeInMilliseconds){
+    await new Promise((resolve, reject) => setTimeout(resolve, timeInMilliseconds));
+}
 const App = () => {
     const componentRef = useRef();
     const [someObject, updateSomeObject] = useObject({ foo: "1" });
@@ -52,7 +57,10 @@ const App = () => {
             <p>{someObject.foo}</p>
             <button
                 onClick={() =>
-                    updateSomeObject({foo:"peanuts", bar:"stuff"})
+                    updateSomeObject(async () => {
+                        await sleep(3000);
+                        return {foo: "peanuts"};
+                    })
                 }
             >
                 click for peanuts
