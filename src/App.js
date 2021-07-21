@@ -29,7 +29,7 @@ function useObject(object) {
     const [state, setState] = useState([object]);
 
     /**
-     * Let react know that the object has changed and that is should re-render whatever is using it.
+     * Let react know that the object has changed and that it should re-render whatever is using it.
      * @param {Function | Object | undefined} x optional function or object passed to update to modify the object and update in one go.
      * If undefined: updates the state.
      * If Object: iterates through the object's fields, modifying each one in the state, then updates the state.
