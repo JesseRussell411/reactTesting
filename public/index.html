@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
+        <meta
+            name="description"
+            content="Web site created using create-react-app"
+        />
+        <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+        <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
+        <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+        <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -25,58 +28,77 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
-    <style>
-      /* A simple css reset */
-      body,table,thead,tbody,tr,td,img {
-          padding: 0;
-          margin: 0;
-          border: none;
-          border-spacing: 0px;
-          border-collapse: collapse;
-          vertical-align: top;
-      }
+        <title>React App</title>
+        <style>
+            /* A simple css reset */
+            body,
+            table,
+            thead,
+            tbody,
+            tr,
+            td,
+            img {
+                padding: 0;
+                margin: 0;
+                border: none;
+                border-spacing: 0px;
+                border-collapse: collapse;
+                vertical-align: top;
+            }
 
-      /* Add some padding for small screens */
-      .wrapper {
-          padding-left: 10px;
-          padding-right: 10px;
-      }
+            /* Add some padding for small screens */
+            .wrapper {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
 
-      h1,h2,h3,h4,h5,h6,p {
-          margin: 0;
-          padding: 0;
-          padding-bottom: 20px;
-          line-height: 1.6;
-          font-family: 'Helvetica', 'Arial', sans-serif;
-      }
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
+            p {
+                margin: 0;
+                padding: 0;
+                padding-bottom: 20px;
+                line-height: 1.6;
+                font-family: "Helvetica", "Arial", sans-serif;
+            }
 
-      p,a,li {
-          font-family: 'Helvetica', 'Arial', sans-serif;
-      }
+            p,
+            a,
+            li {
+                font-family: "Helvetica", "Arial", sans-serif;
+            }
 
-      img {
-          width: 100%;
-          display: block;
-      }
+            img {
+                width: 100%;
+                display: block;
+            }
 
-      @media only screen and (max-width: 620px) {
+            @media only screen and (max-width: 620px) {
+                .wrapper .section {
+                    width: 100%;
+                }
 
-          .wrapper .section {
-              width: 100%;
-          }
+                .wrapper .column {
+                    width: 100%;
+                    display: block;
+                }
+            }
+        </style>
 
-          .wrapper .column {
-              width: 100%;
-              display: block;
-          }
-      }
-  </style>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
+        <!-- roboto for material-ui -->
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        />
+    </head>
+    <body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <div id="root"></div>
+        <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 
@@ -85,6 +107,5 @@
 
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+    --></body>
 </html>
