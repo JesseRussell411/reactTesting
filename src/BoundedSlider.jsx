@@ -9,7 +9,7 @@ const BoundedSlider = ({
     ...sliderProps
 }) => {
     function ToPercent(scale) {
-        return ((value - lowerBound) * 100) / (upperBound - lowerBound);
+        return ((scale - lowerBound) * 100) / (upperBound - lowerBound);
     }
 
     function ToScale(percent) {
@@ -19,7 +19,7 @@ const BoundedSlider = ({
     return (
         <Slider
             value={ToPercent(value)}
-            onChange={(event, newValue) => onChange(event, ToScale(newValue))}
+            onChange={(event, newValue) => onChange(ToScale(newValue))}
             {...sliderProps}
         />
     );

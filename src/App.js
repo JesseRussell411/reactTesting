@@ -5,6 +5,15 @@ import ReactToPrint from "react-to-print";
 import Main from "./Main";
 import ReactCompUtils from "./ReactCompUtils";
 import BoundedSlider from "./BoundedSlider";
+import DynamicSlider from "./DynamicSlider";
+import "@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css";
+import DataGrid, {
+    Column,
+    FilterRow,
+    HeaderFilter,
+    Pager,
+    Paging,
+} from "devextreme-react/data-grid";
 
 const toPrint = [
     <Main />,
@@ -68,18 +77,167 @@ const App = () => {
     const componentRef = useRef();
     const [someObject, updateSomeObject] = useObject({ foo: "1" });
     const [sliderValue, setSliderValue] = useState(0);
-    console.log(someObject);
+    const customers = [
+        {
+            CompanyName: "asshole",
+            Country: "butlandia",
+            City: "assville",
+            Address: "1234 asshole dr.",
+            Phone: "420-420-6969",
+        },
+        {
+            CompanyName: "didn't",
+            Country: "chairland",
+            City: "sitville",
+            Address: "876 seat dr.",
+            Phone: "9999999999",
+        },
+        {
+            CompanyName: "include",
+            Country: "stuff-land",
+            City: "whatever-town",
+            Address: "0000-idk",
+            Phone: "0000000000",
+        },
+        {
+            CompanyName: "a",
+            Country: "apple?",
+            City: "iphone",
+            Address: "18 no headphone jack rd.",
+            Phone: "na",
+        },
+        {
+            CompanyName: "download",
+            Country: "russia",
+            City: "russia",
+            Address: "123 russia dv.",
+            Phone: "934252-3425-6345-234-23423-facc3",
+        },
+        {
+            CompanyName: "for",
+            Country: "planet earth",
+            City: "usa",
+            Address: "texas",
+            Phone: "934243234",
+        },
+        {
+            CompanyName: "the",
+            Country: "japan",
+            City: "china",
+            Address: "korea",
+            Phone: "999999999999",
+        },
+        {
+            CompanyName: "customers.js",
+            Country: "javascript",
+            City: "node",
+            Address: "342523 idk-streat",
+            Phone: "45235235235",
+        },
+        {
+            CompanyName: "file!",
+            Country: "c#",
+            City: "public static void Main(string[] args)",
+            Address: ".net",
+            Phone: "5",
+        },
+        {
+            CompanyName: "What",
+            Country: "java",
+            City: "public static void main(String[] args)",
+            Address: "java",
+            Phone: "??????",
+        },
+        {
+            CompanyName: "a",
+            Country: "c++",
+            City: "int main()",
+            Address: "gcc",
+            Phone: "cpp20",
+        },
+        {
+            CompanyName: "prick!",
+            Country: "c",
+            City: "int main()",
+            Address: "gcc",
+            Phone: "idk",
+        },
+    ];
 
     return (
-        <div>
+        <div style={{ padding: "50px" }}>
+            <DataGrid dataSource={customers}>
+                <FilterRow visible={true} />
+                <HeaderFilter visible={true} />
+                <Pager
+                    allowedPageSizes={[10, 25, 50, 100]}
+                    showPageSizeSelector={true}
+                    visible={true}
+                />
+                <Paging defaultPageSize={15} defaultPageIndex={0} />
+                <Column
+                    dataField="CompanyName"
+                    caption="company name"
+                    dataType="string"
+                    alignment="left"
+                />
+                <Column
+                    dataField="Country"
+                    caption="county"
+                    dataType="string"
+                    alignment="left"
+                />
+                <Column
+                    dataField="City"
+                    caption="city"
+                    dataType="string"
+                    alignment="left"
+                />
+                <Column
+                    dataField="Address"
+                    caption="address"
+                    dataType="string"
+                    alignment="left"
+                />
+                <Column
+                    dataField="Phone"
+                    caption="phone"
+                    dataType="string"
+                    alignment="left"
+                />
+            </DataGrid>
+
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
             <BoundedSlider
                 lowerBound={110}
                 upperBound={167}
                 value={sliderValue}
-                onChange={(e, nv) => setSliderValue(nv)}
+                onChange={(newValue) => setSliderValue(newValue)}
                 style={{ width: "300px", margin: "20px" }}
             />
             {sliderValue}
+
+            <br />
+            <br />
+            <br />
+            <DynamicSlider
+                style={{ width: "300px", margin: "30px" }}
+                defaultValue={400}
+                hardLowerBound={-1000}
+                hardUpperBound={1000}
+            />
+            <br />
+            <br />
             <p>{someObject.foo}</p>
             <button
                 onClick={() =>
