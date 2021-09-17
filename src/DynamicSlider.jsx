@@ -1,6 +1,28 @@
 import { Button, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 import React, { useState } from "react";
 import BoundedSlider from "./BoundedSlider";
+
+const useStyles = makeStyles(() => ({
+    main: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        "& > :nth-last-child(n + 2)": {
+            marginRight: "10px",
+        },
+    },
+    boundary: {},
+    upperBound: {},
+    lowerBound: {},
+    slider: {
+        margin: "0px",
+        flexGrow: 1,
+    },
+    valueField: {
+        width: "5ch",
+    },
+}));
 
 const DynamicSlider = ({
     defaultLowerBound = 0,
@@ -9,8 +31,10 @@ const DynamicSlider = ({
     hardUpperBound,
     defaultValue = 50,
     onChange = () => {},
+    style,
     ...boundedSliderProps
 }) => {
+    const classes = useStyles();
     // state:
     const [lowerBound, setLowerBound] = useState(
         filterLowerBound(defaultLowerBound)
@@ -86,19 +110,23 @@ const DynamicSlider = ({
     }
 
     return (
-        <>
-            <Button onClick={resetToDefault}>Default</Button>
-            {lowerBound}
+        <div className={classes.main} style={style}>
+            <div className={`${classes.boundary} ${classes.lowerBound}}`}>
+                {lowerBound}
+            </div>
             <BoundedSlider
+                className={classes.slider}
                 lowerBound={lowerBound}
                 upperBound={upperBound}
                 value={value}
                 onChange={handleSliderChange}
                 {...boundedSliderProps}
             />
-            {upperBound}
+            <div className={`${classes.boundary} ${classes.upperBound}}`}>
+                {upperBound}
+            </div>
             <TextField
-                variant={"outlined"}
+                className={classes.valueField}
                 value={textFieldValue}
                 onChange={handleTextFieldChange}
                 onBlur={handleTextFieldBlur}
@@ -108,7 +136,10 @@ const DynamicSlider = ({
                     }
                 }}
             ></TextField>
-        </>
+            <Button className={classes.resetButton} onClick={resetToDefault} variant={"contained"}>
+                Reset
+            </Button>
+        </div>
     );
 };
 

@@ -231,7 +231,7 @@ const App = () => {
             <br />
             <br />
             <DynamicSlider
-                style={{ width: "300px", margin: "30px" }}
+                style={{ margin: "30px" }}
                 defaultValue={400}
                 hardLowerBound={-1000}
                 hardUpperBound={1000}
