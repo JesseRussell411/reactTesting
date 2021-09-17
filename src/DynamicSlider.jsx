@@ -17,22 +17,30 @@ const useStyles = makeStyles(() => ({
     lowerBound: {},
     slider: {
         margin: "0px",
-        flexGrow: 1,
+        // flexGrow: 1,
     },
     valueField: {
-        width: "5ch",
+        width: "8ch",
     },
+    resetButton: {},
 }));
 
-const DynamicSlider = ({
+/**
+ * Bounded slider with bounds that grow when the user enters values that are out of bounds.
+ * @param hardLowerBound The smallest allowed value for the lower bound; even if the user enters something smaller.
+ * @param hardUpperBound The largest allowed value for the upper bound; even if the user enters something larger.
+ * @param {(number) => void} onChange Called when the value changes.
+ */
+ const DynamicSlider = ({
     defaultLowerBound = 0,
     defaultUpperBound = 100,
     hardLowerBound,
     hardUpperBound,
     defaultValue = 50,
+    disabled = false,
     onChange = () => {},
     style,
-    ...boundedSliderProps
+    ...BoundedSliderProps
 }) => {
     const classes = useStyles();
     // state:
@@ -45,9 +53,9 @@ const DynamicSlider = ({
     const [value, setValue] = useState(() => filterNewValue(defaultValue));
     const [textFieldValue, setTextFieldValue] = useState(value);
     function resetToDefault() {
-        const newValue = filterNewValue(defaultValue);
         setLowerBound(filterLowerBound(defaultLowerBound));
         setUpperBound(filterUpperBound(defaultUpperBound));
+        const newValue = filterNewValue(defaultValue);
         setTextFieldValue(newValue);
         setValue(newValue);
         onChange(newValue);
@@ -120,7 +128,8 @@ const DynamicSlider = ({
                 upperBound={upperBound}
                 value={value}
                 onChange={handleSliderChange}
-                {...boundedSliderProps}
+                disabled={disabled}
+                {...BoundedSliderProps}
             />
             <div className={`${classes.boundary} ${classes.upperBound}}`}>
                 {upperBound}
@@ -135,8 +144,14 @@ const DynamicSlider = ({
                         handleTextFieldSubmit(event);
                     }
                 }}
+                disabled={disabled}
             ></TextField>
-            <Button className={classes.resetButton} onClick={resetToDefault} variant={"contained"}>
+            <Button
+                className={classes.resetButton}
+                onClick={resetToDefault}
+                variant={"contained"}
+                disabled={disabled}
+            >
                 Reset
             </Button>
         </div>
