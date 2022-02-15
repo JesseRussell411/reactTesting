@@ -11,6 +11,7 @@ import { Stopwatch } from "./utils/Stopwatch";
 import { useEffect, useState } from "react";
 import ReactToPrint from "react-to-print";
 import React from "react";
+import DynamicSlider from "./DynamicSlider";
 
 const containerWidth = 700;
 const columnSpacing = 20;
@@ -504,52 +505,8 @@ class Main extends React.Component {
                     </tbody>
                 </table>
 
-                <Tgrid
-                    columns={95}
-                    columnWise={true}
-                    tdProps={{
-                        style: {
-                            height: "20px",
-                            width: "20px",
-                            textAlign: "center",
-                            display: "inline-block",
-                        },
-                    }}
-                    injectTdProps={true}
-                >
-                    {(() => {
-                        let result = [];
-                        for (let i = 0; i < 100; ++i) {
-                            result.push(<>a</>);
-                            result.push(<>b</>);
-                            result.push(<>c</>);
-                            result.push(<>d</>);
-                            result.push(<>e</>);
-                            result.push(<>f</>);
-                            result.push(<>g</>);
-                            result.push(<>h</>);
-                            result.push(<>i</>);
-                            result.push(<>j</>);
-                            result.push(<>k</>);
-                            result.push(<>l</>);
-                            result.push(<>m</>);
-                            result.push(<>n</>);
-                            result.push(<>o</>);
-                            result.push(<>p</>);
-                            result.push(<>q</>);
-                            result.push(<>r</>);
-                            result.push(<>s</>);
-                            result.push(<>t</>);
-                            result.push(<>u</>);
-                            result.push(<>v</>);
-                            result.push(<>w</>);
-                            result.push(<>x</>);
-                            result.push(<>y</>);
-                            result.push(<>z</>);
-                        }
-                        return result;
-                    })()}
-                </Tgrid>
+
+                <BigGridMan />
                 <Table tdProps={{ style: { border: "1px solid black" } }}>
                     <thead>
                         <Tr>
@@ -638,7 +595,69 @@ class Main extends React.Component {
                 </Tgrid>
             </div>
         );
+
     }
+}
+
+
+function BigGridMan(){
+
+    const initialColumnCount = 10;
+    const [columnCountForTGrid, setColumnCount] = useState(initialColumnCount);
+
+
+
+
+    return <>
+        <DynamicSlider hardLowerBound={1} defaultValue={initialColumnCount} onChange={(newValue) => setColumnCount(Math.floor(newValue))} />
+
+
+        <Tgrid
+            columns={columnCountForTGrid}
+            columnWise={true}
+            tdProps={{
+                style: {
+                    height: "20px",
+                    width: "20px",
+                    textAlign: "center",
+                    display: "inline-block",
+                },
+            }}
+            injectTdProps={true}
+        >
+            {(() => {
+                let result = [];
+                for (let i = 0; i < 100; ++i) {
+                    result.push(<>a</>);
+                    result.push(<>b</>);
+                    result.push(<>c</>);
+                    result.push(<>d</>);
+                    result.push(<>e</>);
+                    result.push(<>f</>);
+                    result.push(<>g</>);
+                    result.push(<>h</>);
+                    result.push(<>i</>);
+                    result.push(<>j</>);
+                    result.push(<>k</>);
+                    result.push(<>l</>);
+                    result.push(<>m</>);
+                    result.push(<>n</>);
+                    result.push(<>o</>);
+                    result.push(<>p</>);
+                    result.push(<>q</>);
+                    result.push(<>r</>);
+                    result.push(<>s</>);
+                    result.push(<>t</>);
+                    result.push(<>u</>);
+                    result.push(<>v</>);
+                    result.push(<>w</>);
+                    result.push(<>x</>);
+                    result.push(<>y</>);
+                    result.push(<>z</>);
+                }
+                return result;
+            })()}
+        </Tgrid></>;
 }
 
 export default Main;

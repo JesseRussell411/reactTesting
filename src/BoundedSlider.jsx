@@ -20,7 +20,7 @@ const BoundedSlider = ({
     function ToScale(percent) {
         return (percent * (upperBound - lowerBound)) / 100 + lowerBound;
     }
-
+// do whatever you want!!!!!!!!!!!!!!!!
     return (
         <Slider
             disabled={disabled}
