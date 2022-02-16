@@ -49,7 +49,7 @@ export function useTimeout(onCreation: (id: number) => void = () => undefined) {
         }
 
         // Create the timeout and collect its id.
-        const id = setTimeout(
+        const id = (setTimeout(
             (...args: any[]) => {
                 // Remove this timeout's id from the set of created Timeouts:
                 // Once the timeout's called, it won't need to be cleared anymore.
@@ -60,7 +60,7 @@ export function useTimeout(onCreation: (id: number) => void = () => undefined) {
             },
             ms,
             ...args
-        );
+        ) as unknown) as number;
 
         // Run the onCreation callback.
         try {
@@ -123,7 +123,7 @@ export function useInterval(
         }
 
         // Create the interval and collect its id.
-        const id = setInterval(callback, ms, ...args);
+        const id = setInterval(callback, ms, ...args) as unknown as number;
 
         // Run the onCreation callback
         try {
@@ -167,7 +167,7 @@ export function useLifespanInterval(
     // Create and destroy the interval.
     useEffect(() => {
         // Create the interval and collect its id.
-        const intervalID = setInterval(callback, ms);
+        const intervalID = setInterval(callback, ms) as unknown as number;
 
         // Set the returned state to the, now created, interval's id.
         setReturnedID(intervalID);
