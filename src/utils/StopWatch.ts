@@ -1,12 +1,14 @@
 // to help address the different implementation of performance.now between browser and node.
+
+/** @returns A timestamp measured in milliseconds. */
 const now = () => window.performance.now();
 
 /**
  * Measures the passage of time by mimicking a physical stopwatch.
  */
 export default class Stopwatch {
-    /** what to subtract from either now() or stopTime to get the elapsed time. Will be equal to the time the stopwatch
-     * was last started PLUS the time in which it was paused. */
+    /** what to subtract from either now() or stopTime to get the elapsed time. Should be equal to the time the stopwatch
+     * was last reset PLUS the time in which it was paused. */
     private earlyTime: number = 0;
     /** When the stopwatch was last stopped. This value can be arbitrary while in the running state. */
     private stopTime: number = 0;
@@ -19,7 +21,7 @@ export default class Stopwatch {
         return this._running;
     }
 
-    /** Simply the inverse of running. Whether the stopwatch is not running. */
+    /** Whether the stopwatch is not running. */
     public get stopped() {
         return !this._running;
     }
@@ -49,10 +51,10 @@ export default class Stopwatch {
     public readonly startStop = (): boolean => {
         if (this._running) {
             this.stopTime = now();
-            return this._running = false;
+            return (this._running = false);
         } else {
             this.earlyTime += now() - this.stopTime;
-            return this._running = true;
+            return (this._running = true);
         }
     };
 
