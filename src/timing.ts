@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import {useDebugValue, useEffect, useRef, useState} from "react";
 
 // The hooks in this file exist to automate the safety measure of clearing intervals and timeouts in react components
 // when they de-render. Something that normally requires storing the id somewhere and adding a useEffect cleanup
@@ -36,6 +36,11 @@ export function useTimeout(onCreation: (id: number) => void = () => undefined) {
         []
     );
 
+
+    // debug values
+    useDebugValue({"timeout IDs": [...IDs], "component has derendered": closed})
+
+    // Create and return timeout function.
     return function timeout(
         callback: (...args: any[]) => void,
         ms?: number,
@@ -110,6 +115,10 @@ export function useInterval(
         []
     );
 
+    // debug values
+    useDebugValue({"interval IDs": IDs, "component has derendered": closed})
+
+    // Create and return the interval function.
     return function interval(
         callback: (...args: any[]) => void,
         ms?: number,
@@ -161,6 +170,9 @@ export function useLifespanInterval(
     ms?: number,
     onCreation: (ID: number) => void = () => undefined
 ) {
+    // debug values
+    useDebugValue({timeout: ms});
+
     // Something to return from the hook. This will eventually contain the interval's id.
     const [returnedID, setReturnedID] = useState<number>();
 

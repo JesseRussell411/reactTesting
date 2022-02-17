@@ -18,7 +18,7 @@ import DerendersStateTest from "./DerendersStateTest";
 
 import immutable from "immutable";
 import Stopwatch from "./utils/Stopwatch";
-import {useInterval, useLifespanInterval} from "./timing";
+import {useInterval, useLifespanInterval, useTimeout} from "./timing";
 import useConst from "./useConst";
 
 const map1 = immutable.Map({a: 1, b: 2, c: 3});
@@ -183,6 +183,11 @@ const App = () => {
         },
     ];
 
+    const interval = useInterval();
+    const timeout = useTimeout();
+
+
+
     const [showTest, setShowTest] = useState(true);
 
     // const {current: stopwatch} = useRef(new Stopwatch());
@@ -223,6 +228,7 @@ const App = () => {
         //     console.log("clearInterval:", intervalIDRef.current);
         //     clearInterval(intervalIDRef.current);
         // }, []);
+
 
 
         const {current: lifespanIntervals} = useRef([]);
@@ -276,6 +282,30 @@ const App = () => {
     }
 
 
+    function TimingHookTest(){
+        const timeout = useTimeout();
+        const interval = useInterval();
+        var [thingy, setThingy] = useState("");
+        function stuffAndAlsoConsole(stff){
+            console.log(stff);
+            setThingy(thingy + stff);
+        }
+
+        return <div>
+            <button onClick={
+                () =>
+                    interval(() => {
+                        stuffAndAlsoConsole("Laggy Hello w");timeout(() => stuffAndAlsoConsole("orld!"), 500);}, 2000)
+
+            }>Timing hooks test, open console</button>
+
+            {thingy}
+        </div>
+
+    }
+
+    var [showTimingHookTest, setShowTimingHookTestSteve] = useState(false);
+
 
     const testref = useRef(false);
 
@@ -284,11 +314,14 @@ const App = () => {
     console.log("testref", testref.current);
 
 
-
+function toggle(current, set){
+    set(!current);
+}
     const [showStopwatch, setShowStopwatch] = useState(false);
     return (
         <div style={{padding: "50px"}}>
             <h1>stopwatch test</h1>
+            htmx test
             <button
                 onClick={() => setShowStopwatch(!showStopwatch)}>{showStopwatch ? "Close Stopwatch" : "Open Stopwatch"}</button>
             {showStopwatch && <StopwatchGui/>}
@@ -304,6 +337,13 @@ const App = () => {
             {/*    setShowTest(false);*/}
             {/*    setTimeout(() => setShowTest(true), 2000);*/}
             {/*}}/>}*/}
+
+
+
+<button onClick={() => toggle(showTimingHookTest, setShowTimingHookTestSteve)} style={{padding: "70"}}>timing hooks test</button>
+
+
+            {showTimingHookTest && <TimingHookTest/>}
 
 
             <DataGrid dataSource={customers}>
