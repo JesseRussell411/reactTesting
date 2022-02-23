@@ -9,7 +9,7 @@ export function lazy<T>(supplier: () => T) {
     let rejected: boolean = false;
     let result: T | any;
 
-    const memoized = () => {
+    return () => {
         if (resolved) {
             return result as T;
         } else if (rejected) {
@@ -26,11 +26,10 @@ export function lazy<T>(supplier: () => T) {
             }
         }
     };
-
-    return memoized;
 }
 
-/** The same as lazy except, the returned function has an extra property called "invalidate" which clears the cache,
+/**
+ * The same as lazy except, the returned function has an extra property called "invalidate" which clears the cache,
  * causing the supplier to be called again the next time its output is needed.
  * @param supplier
  */
