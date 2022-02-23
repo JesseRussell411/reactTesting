@@ -170,8 +170,6 @@ export function useLifespanInterval(
     ms?: number,
     onCreation: (ID: number) => void = () => undefined
 ) {
-    // debug values
-    useDebugValue({timeout: ms});
 
     // Something to return from the hook. This will eventually contain the interval's id.
     const [returnedID, setReturnedID] = useState<number>();
@@ -194,6 +192,9 @@ export function useLifespanInterval(
         // return the cleanup function which will clear the interval when the component de-renders.
         return () => clearInterval(intervalID);
     }, []);
+
+    // debug values
+    useDebugValue({timeout: ms, intervalID: returnedID});
 
     return returnedID;
 }

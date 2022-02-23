@@ -307,6 +307,7 @@ const App = () => {
     var [showTimingHookTest, setShowTimingHookTestSteve] = useState(false);
 
 
+
     const testref = useRef(false);
 
     useEffect(() => {testref.current = true;},[]);
@@ -321,7 +322,6 @@ function toggle(current, set){
     return (
         <div style={{padding: "50px"}}>
             <h1>stopwatch test</h1>
-            htmx test
             <button
                 onClick={() => setShowStopwatch(!showStopwatch)}>{showStopwatch ? "Close Stopwatch" : "Open Stopwatch"}</button>
             {showStopwatch && <StopwatchGui/>}
