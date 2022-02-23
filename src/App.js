@@ -99,7 +99,7 @@ const App = () => {
     const [sliderValue, setSliderValue] = useState(0);
     const customers = [
         {
-            CompanyName: "asshole",
+            CompanyName: "********",
             Country: "butlandia",
             City: "assville",
             Address: "1234 asshole dr.",
@@ -176,7 +176,7 @@ const App = () => {
             Phone: "cpp20",
         },
         {
-            CompanyName: "prick!",
+            CompanyName: "*****!",
             Country: "c",
             City: "int main()",
             Address: "gcc",
