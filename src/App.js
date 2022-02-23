@@ -20,6 +20,7 @@ import immutable from "immutable";
 import Stopwatch from "./utils/Stopwatch";
 import {useInterval, useLifespanInterval, useTimeout} from "./timing";
 import useConst from "./useConst";
+import {cache, lazy} from "./utils/caching";
 
 const map1 = immutable.Map({a: 1, b: 2, c: 3});
 const map2 = map1.set('b', 50);
@@ -187,7 +188,6 @@ const App = () => {
     const timeout = useTimeout();
 
 
-
     const [showTest, setShowTest] = useState(true);
 
     // const {current: stopwatch} = useRef(new Stopwatch());
@@ -206,7 +206,6 @@ const App = () => {
         // console.log("ID?:", useLifespanInterval(() => {
         //     console.log("According to the lifespan interval function. The stopwatch is currently open.");
         // }, 2000));
-
 
 
         // const createdRef = useRef(false);
@@ -230,11 +229,12 @@ const App = () => {
         // }, []);
 
 
-
         const {current: lifespanIntervals} = useRef([]);
-        function takeInterval(id){
+
+        function takeInterval(id) {
             lifespanIntervals.push(id);
         }
+
         useLifespanInterval(() => {
             console.log(lifespanIntervals);
         }, 1000, takeInterval);
@@ -282,11 +282,12 @@ const App = () => {
     }
 
 
-    function TimingHookTest(){
+    function TimingHookTest() {
         const timeout = useTimeout();
         const interval = useInterval();
         var [thingy, setThingy] = useState("");
-        function stuffAndAlsoConsole(stff){
+
+        function stuffAndAlsoConsole(stff) {
             console.log(stff);
             setThingy(thingy + stff);
         }
@@ -295,9 +296,12 @@ const App = () => {
             <button onClick={
                 () =>
                     interval(() => {
-                        stuffAndAlsoConsole("Laggy Hello w");timeout(() => stuffAndAlsoConsole("orld!"), 500);}, 2000)
+                        stuffAndAlsoConsole("Laggy Hello w");
+                        timeout(() => stuffAndAlsoConsole("orld!"), 500);
+                    }, 2000)
 
-            }>Timing hooks test, open console</button>
+            }>Timing hooks test, open console
+            </button>
 
             {thingy}
         </div>
@@ -307,20 +311,36 @@ const App = () => {
     var [showTimingHookTest, setShowTimingHookTestSteve] = useState(false);
 
 
-
     const testref = useRef(false);
 
-    useEffect(() => {testref.current = true;},[]);
+    useEffect(() => {
+        testref.current = true;
+    }, []);
 
     console.log("testref", testref.current);
 
 
-function toggle(current, set){
-    set(!current);
-}
+    function toggle(current, set) {
+        set(!current);
+    }
+
+
     const [showStopwatch, setShowStopwatch] = useState(false);
+
+
+    const [lazyRandomNumber, setLazyRandomNumber] = useState(undefined);
+    const [getLazyRandomNumber] = useState(() => cache(Math.random));
+    const getGetLazyRandomNumber = () => getLazyRandomNumber ?? (() => Object.assign(() => undefined, {invalidate: () => undefined}));
+
+    // ============================================================================================================================================================================================================<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     return (
         <div style={{padding: "50px"}}>
+            <h1>lazy test</h1>
+            <button onClick={() => setLazyRandomNumber(getGetLazyRandomNumber()())}>lazy random number</button>
+            <button onClick={() => getGetLazyRandomNumber().invalidate()}>invalidate lazy random number</button>
+            {lazyRandomNumber}
+
+
             <h1>stopwatch test</h1>
             <button
                 onClick={() => setShowStopwatch(!showStopwatch)}>{showStopwatch ? "Close Stopwatch" : "Open Stopwatch"}</button>
@@ -339,8 +359,9 @@ function toggle(current, set){
             {/*}}/>}*/}
 
 
-
-<button onClick={() => toggle(showTimingHookTest, setShowTimingHookTestSteve)} style={{padding: "70"}}>timing hooks test</button>
+            <button onClick={() => toggle(showTimingHookTest, setShowTimingHookTestSteve)}
+                    style={{padding: "70"}}>timing hooks test
+            </button>
 
 
             {showTimingHookTest && <TimingHookTest/>}

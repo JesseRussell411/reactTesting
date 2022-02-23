@@ -4,14 +4,14 @@
  * @param supplier Called once to get output.
  * @return A function which returns the output of the supplier.
  */
-export function lazy<T>(supplier: () => T): () => T {
+export function lazy<T>(supplier: () => T) {
     let resolved: boolean = false;
     let rejected: boolean = false;
     let result: T | any;
 
     const memoized = () => {
         if (resolved) {
-            return result;
+            return result as T;
         } else if (rejected) {
             throw result as any;
         } else {
@@ -27,10 +27,19 @@ export function lazy<T>(supplier: () => T): () => T {
         }
     };
 
-    memoized.invalidate = () => {
-        resolved = false;
-        rejected = false;
-    };
+    return memoized;
+}
+
+/** The same as lazy except, the returned function has an extra property called "invalidate" which clears the cache,
+ * causing the supplier to be called again the next time its output is needed.
+ * @param supplier
+ */
+export function cache<T>(supplier: () => T) {
+    let lazySupplier = lazy(supplier);
+
+    const memoized = () => lazySupplier();
+
+    memoized.invalidate = () => lazySupplier = lazy(supplier);
 
     return memoized;
 }
