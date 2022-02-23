@@ -101,7 +101,7 @@ const App = () => {
         {
             CompanyName: "********",
             Country: "butlandia",
-            City: "assville",
+            City: "ville",
             Address: "1234 asshole dr.",
             Phone: "420-420-6969",
         },
