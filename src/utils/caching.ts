@@ -42,3 +42,9 @@ export function cache<T>(supplier: () => T) {
 
     return memoized;
 }
+
+// so I could have given "lazy" the invalidate field, which would be SLIGHTLY better for performance and memory
+// usage than this. There'd be one less layer of abstraction. but this is just more FuNcTiOnAl so I couldn't help
+// myself. "lazy" can't be touched. No matter who I give it too. It can't be invalidated, it can't be broken, it's
+// __IMMUTABLE__, which is the corner-stone/key-stone of functional programmer (and modern programming in my opinion).
+// --jesse
