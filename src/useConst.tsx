@@ -1,5 +1,5 @@
-import {useEffect, useMemo, useRef} from "react";
+import {useRef} from "react";
 
-export default function useConst<T>(initalValue: () => T | T): T {
-    return useMemo(() => initalValue instanceof Function ? (initalValue as Function)() : initalValue, []);
+export default function useConst<T>(value: T | (() => T)): T {
+        return useRef(value instanceof Function ? value() : value).current;
 }

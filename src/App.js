@@ -20,7 +20,8 @@ import immutable from "immutable";
 import Stopwatch from "./utils/Stopwatch";
 import {useInterval, useLifespanInterval, useTimeout} from "./timing";
 import useConst from "./useConst";
-import {cache, lazy} from "./utils/caching";
+import {cachedExpression, lazy} from "./utils/caching";
+import NestedDialog from "./AntiPatters/NestedDialog";
 
 const map1 = immutable.Map({a: 1, b: 2, c: 3});
 const map2 = map1.set('b', 50);
@@ -30,6 +31,99 @@ console.log("m2: ", map2.get("b"))
 const set1 = immutable.Set([1, 7, 4, 9, 11]);
 console.log([...set1.add(8).keys()]);
 console.log([...set1.values()]);
+
+
+function StopwatchGui() {
+    const stopwatch = useConst(new Stopwatch());
+    const [timeElapsed, setTimeElapsed] = useState(0);
+    const [stopwatchRunning, setStopwatchRunning] = useState(stopwatch.running);
+
+
+    console.log("sw:", stopwatch);
+
+    // console.log("pre lsi");
+    // console.log("ID?:", useLifespanInterval(() => {
+    //     console.log("According to the lifespan interval function. The stopwatch is currently open.");
+    // }, 2000));
+
+
+    // const createdRef = useRef(false);
+    // console.log("cr:", createdRef)
+    // const intervalIDRef = useRef();
+    // console.log("ii:", createdRef)
+    //
+    // if (!createdRef.current) {
+    //     console.log("created is still false");
+    //     createdRef.current = true;
+    //     intervalIDRef.current = setInterval(() => {
+    //         console.log(intervalIDRef.current);
+    //
+    //     }, 1000);
+    //     console.log("created Interval:", intervalIDRef.current);
+    // }
+
+    // useEffect(() => () => {
+    //     console.log("clearInterval:", intervalIDRef.current);
+    //     clearInterval(intervalIDRef.current);
+    // }, []);
+
+
+    const {current: lifespanIntervals} = useRef([]);
+
+    function takeInterval(id) {
+        lifespanIntervals.push(id);
+    }
+
+    useLifespanInterval(() => {
+        console.log(lifespanIntervals);
+    }, 1000, takeInterval);
+
+    return <div>
+
+        {timeElapsed}
+        <br/>
+        <button
+            style={{
+                width: "7em",
+                height: "2em",
+                backgroundColor: stopwatchRunning ? "pink" : "lightGreen",
+                borderRadius: "1000000000000000000000000000vh"
+            }}
+
+
+            onClick={() =>
+
+                setStopwatchRunning(stopwatch.startStop())
+
+
+            }>{stopwatchRunning ? "stop" : "start"}
+        </button>
+        <br/>
+        <button onClick={() => {
+            stopwatch.reset();
+            setStopwatchRunning(false);
+        }}>reset
+        </button>
+        <button onClick={() => {
+            stopwatch.restart();
+            setStopwatchRunning(true);
+        }}>restart
+        </button>
+        <button onClick={() => lifespanIntervals.forEach(id => clearInterval(id))}>Cancel Update Intervals</button>
+        <br/>
+        <button onClick={() => {
+            stopwatch.start();
+            setStopwatchRunning(true);
+        }}>start
+        </button>
+        <button onClick={() => {
+            stopwatch.stop();
+            setStopwatchRunning(false);
+        }}>stop
+        </button>
+    </div>
+}
+
 
 const toPrint = [
     <Main/>,
@@ -189,6 +283,8 @@ const App = () => {
 
 
     const [showTest, setShowTest] = useState(true);
+    console.log("showTest:", showTest);
+
 
     // const {current: stopwatch} = useRef(new Stopwatch());
     //
@@ -197,89 +293,6 @@ const App = () => {
     // const stopwatch = useMemo(() => new Stopwatch(), []);
 
 
-    function StopwatchGui() {
-        const [timeElapsed, setTimeElapsed] = useState(0);
-        const [stopwatchRunning, setStopwatchRunning] = useState(stopwatch.running);
-        console.log("sw:", stopwatch);
-
-        // console.log("pre lsi");
-        // console.log("ID?:", useLifespanInterval(() => {
-        //     console.log("According to the lifespan interval function. The stopwatch is currently open.");
-        // }, 2000));
-
-
-        // const createdRef = useRef(false);
-        // console.log("cr:", createdRef)
-        // const intervalIDRef = useRef();
-        // console.log("ii:", createdRef)
-        //
-        // if (!createdRef.current) {
-        //     console.log("created is still false");
-        //     createdRef.current = true;
-        //     intervalIDRef.current = setInterval(() => {
-        //         console.log(intervalIDRef.current);
-        //
-        //     }, 1000);
-        //     console.log("created Interval:", intervalIDRef.current);
-        // }
-
-        // useEffect(() => () => {
-        //     console.log("clearInterval:", intervalIDRef.current);
-        //     clearInterval(intervalIDRef.current);
-        // }, []);
-
-
-        const {current: lifespanIntervals} = useRef([]);
-
-        function takeInterval(id) {
-            lifespanIntervals.push(id);
-        }
-
-        useLifespanInterval(() => {
-            console.log(lifespanIntervals);
-        }, 1000, takeInterval);
-
-        // const interval = useInterval();
-        // useEffect(() => {
-        //     interval(() => console.log(8888888888888), 1000);
-        // })
-
-        // console.log("post lsi");
-        useLifespanInterval(() => {
-            setTimeElapsed(stopwatch.elapsedTimeInMilliseconds);
-        }, 1000 / 60, takeInterval);
-        return <div>
-            {timeElapsed}
-            <br/>
-            <button
-                style={{
-                    width: "7em",
-                    height: "2em",
-                    backgroundColor: stopwatchRunning ? "pink" : "lightGreen",
-                    borderRadius: "1000000000000000000000000000vh"
-                }}
-
-
-                onClick={() =>
-
-                    setStopwatchRunning(stopwatch.startStop())
-
-
-                }>{stopwatchRunning ? "stop" : "start"}</button>
-            <br/>
-            <button onClick={() => {
-                stopwatch.reset();
-                setStopwatchRunning(false);
-            }}>reset
-            </button>
-            <button onClick={() => {
-                stopwatch.restart();
-                setStopwatchRunning(true);
-            }}>restart
-            </button>
-            <button onClick={() => lifespanIntervals.forEach(id => clearInterval(id))}>Cancel Update Intervals</button>
-        </div>
-    }
 
 
     function TimingHookTest() {
@@ -329,12 +342,13 @@ const App = () => {
 
 
     const [lazyRandomNumber, setLazyRandomNumber] = useState(undefined);
-    const [getLazyRandomNumber] = useState(() => cache(Math.random));
+    const [getLazyRandomNumber] = useState(() => cachedExpression(Math.random));
     const getGetLazyRandomNumber = () => getLazyRandomNumber ?? (() => Object.assign(() => undefined, {invalidate: () => undefined}));
 
     // ============================================================================================================================================================================================================<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     return (
         <div style={{padding: "50px"}}>
+            <NestedDialog/>
             <h1>lazy test</h1>
             <button onClick={() => setLazyRandomNumber(getGetLazyRandomNumber()())}>lazy random number</button>
             <button onClick={() => getGetLazyRandomNumber().invalidate()}>invalidate lazy random number</button>
