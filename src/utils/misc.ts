@@ -25,3 +25,21 @@ export function mod(
 
     return result;
 }
+
+function tryall(...actions) {
+    const results = [];
+    let prevResult = undefined;
+
+    for (const action of actions) {
+        try {
+            const value = action(prevResult);
+            prevResult = { action, isError: false, value };
+        } catch (error) {
+            console.error(error);
+            prevResult = { action, isError: true, error };
+        }
+
+        results.push(prevResult);
+    }
+    return results;
+}
