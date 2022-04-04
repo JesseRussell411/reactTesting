@@ -26,9 +26,17 @@ export function mod(
     return result;
 }
 
-function tryall(...actions) {
-    const results = [];
-    let prevResult = undefined;
+interface IResult<T> {
+    action: IAction<T>;
+    isError: boolean;
+    value?: T;
+    error?: any;
+}
+type IAction<T> = (result: IResult<any> | null) => T;
+
+function tryall(...actions: IAction<any>[]) {
+    const results:IResult<any>[] = [];
+    let prevResult: IResult<any> | null = null;
 
     for (const action of actions) {
         try {
