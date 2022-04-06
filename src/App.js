@@ -1,3 +1,5 @@
+import 'devextreme/dist/css/dx.common.css';
+import 'devextreme/dist/css/dx.light.css';
 import {getByPlaceholderText} from "@testing-library/react";
 import React, {useState, useRef, useEffect, useMemo} from "react";
 import ReactToPrint from "react-to-print";
@@ -12,9 +14,10 @@ import DataGrid, {
     FilterRow,
     HeaderFilter,
     Pager,
-    Paging,
+    Paging, Selection,
 } from "devextreme-react/data-grid";
 import DerendersStateTest from "./DerendersStateTest";
+import companyLogo from './karen the destroyer.png';
 
 import immutable from "immutable";
 import Stopwatch from "./utils/Stopwatch";
@@ -22,6 +25,7 @@ import {useInterval, useLifespanInterval, useTimeout} from "./timing";
 import useConst from "./useConst";
 import {cachedExpression, lazy} from "./utils/caching";
 import NestedDialog from "./AntiPatters/NestedDialog";
+import {AppBar, Box, Button, Toolbar, Typography} from "@mui/material";
 
 const map1 = immutable.Map({a: 1, b: 2, c: 3});
 const map2 = map1.set('b', 50);
@@ -276,7 +280,7 @@ const App = () => {
             Address: "gcc",
             Phone: "idk",
         },
-    ];
+    ].map((c, index) => ({...c, id: index}));
 
     const interval = useInterval();
     const timeout = useTimeout();
@@ -291,8 +295,6 @@ const App = () => {
     const stopwatch = useConst(() => new Stopwatch());
     //
     // const stopwatch = useMemo(() => new Stopwatch(), []);
-
-
 
 
     function TimingHookTest() {
@@ -348,6 +350,7 @@ const App = () => {
     // ============================================================================================================================================================================================================<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     return (
         <div style={{padding: "50px"}}>
+            <Button>mui button</Button>
             <NestedDialog/>
             <h1>lazy test</h1>
             <button onClick={() => setLazyRandomNumber(getGetLazyRandomNumber()())}>lazy random number</button>
@@ -381,46 +384,76 @@ const App = () => {
             {showTimingHookTest && <TimingHookTest/>}
 
 
-            <DataGrid dataSource={customers}>
-                <FilterRow visible={true}/>
-                <HeaderFilter visible={true}/>
-                <Pager
-                    allowedPageSizes={[10, 25, 50, 100]}
-                    showPageSizeSelector={true}
-                    visible={true}
-                />
-                <Paging defaultPageSize={15} defaultPageIndex={0}/>
-                <Column
-                    dataField="CompanyName"
-                    caption="company name"
-                    dataType="string"
-                    alignment="left"
-                />
-                <Column
-                    dataField="Country"
-                    caption="county"
-                    dataType="string"
-                    alignment="left"
-                />
-                <Column
-                    dataField="City"
-                    caption="city"
-                    dataType="string"
-                    alignment="left"
-                />
-                <Column
-                    dataField="Address"
-                    caption="address"
-                    dataType="string"
-                    alignment="left"
-                />
-                <Column
-                    dataField="Phone"
-                    caption="phone"
-                    dataType="string"
-                    alignment="left"
-                />
-            </DataGrid>
+            <Box height={"40vh"} border={"5px solid black"}>
+                <Box display={"flex"} flexDirection={"column"} height={"100%"}>
+                    <AppBar
+                        position={"static"}><Toolbar><Button>save</Button><Button>edit</Button><Button>document</Button><Typography>special
+                        special special special special special special special special special special special special
+                        special special </Typography> </Toolbar></AppBar>
+
+                        <img src={companyLogo} style={{flexShrink: 2, overflow: "hidden"}}/>
+                    <Box border={"3px solid blue"} flexGrow={1} flexShrink={1} minHeight={0}>
+
+
+                        <DataGrid dataSource={customers}
+                                  keyExpr={"id"}
+                                  height={"100%"}
+                                  style={{height:"20px"}}
+                        >
+
+                            <FilterRow visible={true}/>
+                            <HeaderFilter visible={true}/>
+                            <Pager
+                                allowedPageSizes={[10, 25, 50, 100]}
+                                showPageSizeSelector={true}
+                                visible={true}
+                            />
+                            <Paging defaultPageSize={15} defaultPageIndex={0}/>
+                            <Selection
+                                mode={"multiple"}
+                                allowSelectAll={false}
+                                showCheckBoxesMode={"always"}
+                            />
+                            <Column
+                                alignment={"left"}
+                                caption={"id"}
+                                dataField={"id"}
+                                width={100}
+                            />
+                            <Column
+                                dataField="CompanyName"
+                                caption="company name"
+                                dataType="string"
+                                alignment="left"
+                            />
+                            <Column
+                                dataField="Country"
+                                caption="county"
+                                dataType="string"
+                                alignment="left"
+                            />
+                            <Column
+                                dataField="City"
+                                caption="city"
+                                dataType="string"
+                                alignment="left"
+                            />
+                            <Column
+                                dataField="Address"
+                                caption="address"
+                                dataType="string"
+                                alignment="left"
+                            />
+                            <Column
+                                dataField="Phone"
+                                caption="phone"
+                                dataType="string"
+                                alignment="left"
+                            />
+                        </DataGrid>
+                    </Box>
+                </Box>
+            </Box>
 
             <br/>
             <br/>
