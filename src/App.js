@@ -382,6 +382,14 @@ const App = () => {
 
 
             {showTimingHookTest && <TimingHookTest/>}
+            <div>
+                <p>Pargraph inside a div!@</p>
+            </div>
+            <Box>
+                <Typography>
+                    typography in a box
+                </Typography>
+            </Box>
 
 
             <Box height={"40vh"} border={"5px solid black"}>
