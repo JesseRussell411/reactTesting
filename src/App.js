@@ -62,11 +62,11 @@ function StopwatchGui() {
                 millisecondsRemaining %= oneSecond;
                 const milliseconds = millisecondsRemaining;
 
-                return `${hours.toString().padStart(4, "0")}:${minutes
+                return `${hours.toString().padStart(4, "0")} : ${minutes
                     .toString()
-                    .padStart(2, "0")}:${seconds
+                    .padStart(2, "0")} : ${seconds
                     .toString()
-                    .padStart(2, "0")}:${milliseconds
+                    .padStart(2, "0")} : ${milliseconds
                     .toString()
                     .padStart(3, "0")}`;
             })()}
