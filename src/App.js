@@ -48,7 +48,28 @@ function StopwatchGui() {
 
     return (
         <div>
-            {timeElapsed}
+            {(() => {
+                let millisecondsRemaining = timeElapsed;
+                const oneHour = 1000 * 60 * 60;
+                const oneMinute = 1000 * 60;
+                const oneSecond = 1000;
+
+                const hours = Math.trunc(millisecondsRemaining / oneHour);
+                millisecondsRemaining %= oneHour;
+                const minutes = Math.trunc(millisecondsRemaining / oneMinute);
+                millisecondsRemaining %= oneMinute;
+                const seconds = Math.trunc(millisecondsRemaining / oneSecond);
+                millisecondsRemaining %= oneSecond;
+                const milliseconds = millisecondsRemaining;
+
+                return `${hours.toString().padStart(4, "0")}:${minutes
+                    .toString()
+                    .padStart(2, "0")}:${seconds
+                    .toString()
+                    .padStart(2, "0")}:${milliseconds
+                    .toString()
+                    .padStart(3, "0")}`;
+            })()}
             <br />
             <button
                 style={{
