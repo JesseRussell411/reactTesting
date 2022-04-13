@@ -1,7 +1,7 @@
-import 'devextreme/dist/css/dx.common.css';
-import 'devextreme/dist/css/dx.light.css';
-import {getByPlaceholderText} from "@testing-library/react";
-import React, {useState, useRef, useEffect, useMemo} from "react";
+import "devextreme/dist/css/dx.common.css";
+import "devextreme/dist/css/dx.light.css";
+import { getByPlaceholderText } from "@testing-library/react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import ReactToPrint from "react-to-print";
 
 import Main from "./Main";
@@ -14,126 +14,96 @@ import DataGrid, {
     FilterRow,
     HeaderFilter,
     Pager,
-    Paging, Selection,
+    Paging,
+    Selection,
 } from "devextreme-react/data-grid";
 import DerendersStateTest from "./DerendersStateTest";
-import companyLogo from './karen the destroyer.png';
+import companyLogo from "./karen the destroyer.png";
 
 import immutable from "immutable";
 import Stopwatch from "./utils/Stopwatch";
-import {useInterval, useLifespanInterval, useTimeout} from "./timing";
+import { useInterval, useLifespanInterval, useTimeout } from "./timing";
 import useConst from "./useConst";
-import {cachedExpression, lazy} from "./utils/caching";
+import { cachedExpression, lazy } from "./utils/caching";
 import NestedDialog from "./AntiPatters/NestedDialog";
-import {AppBar, Box, Button, Toolbar, Typography} from "@mui/material";
+import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
 
-const map1 = immutable.Map({a: 1, b: 2, c: 3});
-const map2 = map1.set('b', 50);
-console.log("m1: ", map1.get("b"))
-console.log("m2: ", map2.get("b"))
+const map1 = immutable.Map({ a: 1, b: 2, c: 3 });
+const map2 = map1.set("b", 50);
+console.log("m1: ", map1.get("b"));
+console.log("m2: ", map2.get("b"));
 
 const set1 = immutable.Set([1, 7, 4, 9, 11]);
 console.log([...set1.add(8).keys()]);
 console.log([...set1.values()]);
 
-
 function StopwatchGui() {
     const stopwatch = useConst(new Stopwatch());
     const [timeElapsed, setTimeElapsed] = useState(0);
     const [stopwatchRunning, setStopwatchRunning] = useState(stopwatch.running);
+    useLifespanInterval(
+        () => setTimeElapsed(stopwatch.elapsedTimeInMilliseconds),
+        1000 / 120 /* 1000 / fps */
+    );
 
-
-    console.log("sw:", stopwatch);
-
-    // console.log("pre lsi");
-    // console.log("ID?:", useLifespanInterval(() => {
-    //     console.log("According to the lifespan interval function. The stopwatch is currently open.");
-    // }, 2000));
-
-
-    // const createdRef = useRef(false);
-    // console.log("cr:", createdRef)
-    // const intervalIDRef = useRef();
-    // console.log("ii:", createdRef)
-    //
-    // if (!createdRef.current) {
-    //     console.log("created is still false");
-    //     createdRef.current = true;
-    //     intervalIDRef.current = setInterval(() => {
-    //         console.log(intervalIDRef.current);
-    //
-    //     }, 1000);
-    //     console.log("created Interval:", intervalIDRef.current);
-    // }
-
-    // useEffect(() => () => {
-    //     console.log("clearInterval:", intervalIDRef.current);
-    //     clearInterval(intervalIDRef.current);
-    // }, []);
-
-
-    const {current: lifespanIntervals} = useRef([]);
-
-    function takeInterval(id) {
-        lifespanIntervals.push(id);
-    }
-
-    useLifespanInterval(() => {
-        console.log(lifespanIntervals);
-    }, 1000, takeInterval);
-
-    return <div>
-
-        {timeElapsed}
-        <br/>
-        <button
-            style={{
-                width: "7em",
-                height: "2em",
-                backgroundColor: stopwatchRunning ? "pink" : "lightGreen",
-                borderRadius: "1000000000000000000000000000vh"
-            }}
-
-
-            onClick={() =>
-
-                setStopwatchRunning(stopwatch.startStop())
-
-
-            }>{stopwatchRunning ? "stop" : "start"}
-        </button>
-        <br/>
-        <button onClick={() => {
-            stopwatch.reset();
-            setStopwatchRunning(false);
-        }}>reset
-        </button>
-        <button onClick={() => {
-            stopwatch.restart();
-            setStopwatchRunning(true);
-        }}>restart
-        </button>
-        <button onClick={() => lifespanIntervals.forEach(id => clearInterval(id))}>Cancel Update Intervals</button>
-        <br/>
-        <button onClick={() => {
-            stopwatch.start();
-            setStopwatchRunning(true);
-        }}>start
-        </button>
-        <button onClick={() => {
-            stopwatch.stop();
-            setStopwatchRunning(false);
-        }}>stop
-        </button>
-    </div>
+    return (
+        <div>
+            {timeElapsed}
+            <br />
+            <button
+                style={{
+                    width: "7em",
+                    height: "2em",
+                    backgroundColor: stopwatchRunning ? "pink" : "lightGreen",
+                    borderRadius: "1000000000000000000000000000vh",
+                }}
+                onClick={() => setStopwatchRunning(stopwatch.startStop())}
+            >
+                {stopwatchRunning ? "stop" : "start"}
+            </button>
+            <br />
+            <button
+                onClick={() => {
+                    stopwatch.reset();
+                    setStopwatchRunning(false);
+                }}
+            >
+                reset
+            </button>
+            <button
+                onClick={() => {
+                    stopwatch.restart();
+                    setStopwatchRunning(true);
+                }}
+            >
+                restart
+            </button>
+            <br />
+            <button
+                onClick={() => {
+                    stopwatch.start();
+                    setStopwatchRunning(true);
+                }}
+            >
+                start
+            </button>
+            <button
+                onClick={() => {
+                    stopwatch.stop();
+                    setStopwatchRunning(false);
+                }}
+            >
+                stop
+            </button>
+        </div>
+    );
 }
 
-
 const toPrint = [
-    <Main/>,
+    <Main />,
     <p>Hello !!! world</p>,
     <img
-        style={{width: "900px"}}
+        style={{ width: "900px" }}
         src="https://target.scene7.com/is/image/Target/GUEST_8cbce1ab-9e22-4e87-8828-397ec97fc2e6?wid=488&hei=488&fmt=pjpeg"
     />,
 ];
@@ -144,7 +114,7 @@ function makeToPrint(listOfComps) {
         if (props !== undefined) {
             props.key = i;
         }
-        const newComp = {...c};
+        const newComp = { ...c };
         return c;
     });
 }
@@ -184,7 +154,6 @@ function useObject(obj) {
     return [state[0], update];
 }
 
-
 async function sleep(timeInMilliseconds) {
     await new Promise((resolve, reject) =>
         setTimeout(resolve, timeInMilliseconds)
@@ -193,7 +162,7 @@ async function sleep(timeInMilliseconds) {
 
 const App = () => {
     const componentRef = useRef();
-    const [someObject, updateSomeObject] = useObject({foo: "1"});
+    const [someObject, updateSomeObject] = useObject({ foo: "1" });
     const [sliderValue, setSliderValue] = useState(0);
     const customers = [
         {
@@ -280,22 +249,19 @@ const App = () => {
             Address: "gcc",
             Phone: "idk",
         },
-    ].map((c, index) => ({...c, id: index}));
+    ].map((c, index) => ({ ...c, id: index }));
 
     const interval = useInterval();
     const timeout = useTimeout();
 
-
     const [showTest, setShowTest] = useState(true);
     console.log("showTest:", showTest);
-
 
     // const {current: stopwatch} = useRef(new Stopwatch());
     //
     const stopwatch = useConst(() => new Stopwatch());
     //
     // const stopwatch = useMemo(() => new Stopwatch(), []);
-
 
     function TimingHookTest() {
         const timeout = useTimeout();
@@ -307,24 +273,25 @@ const App = () => {
             setThingy(thingy + stff);
         }
 
-        return <div>
-            <button onClick={
-                () =>
-                    interval(() => {
-                        stuffAndAlsoConsole("Laggy Hello w");
-                        timeout(() => stuffAndAlsoConsole("orld!"), 500);
-                    }, 2000)
+        return (
+            <div>
+                <button
+                    onClick={() =>
+                        interval(() => {
+                            stuffAndAlsoConsole("Laggy Hello w");
+                            timeout(() => stuffAndAlsoConsole("orld!"), 500);
+                        }, 2000)
+                    }
+                >
+                    Timing hooks test, open console
+                </button>
 
-            }>Timing hooks test, open console
-            </button>
-
-            {thingy}
-        </div>
-
+                {thingy}
+            </div>
+        );
     }
 
     var [showTimingHookTest, setShowTimingHookTestSteve] = useState(false);
-
 
     const testref = useRef(false);
 
@@ -334,40 +301,45 @@ const App = () => {
 
     console.log("testref", testref.current);
 
-
     function toggle(current, set) {
         set(!current);
     }
 
-
     const [showStopwatch, setShowStopwatch] = useState(false);
-
 
     const [lazyRandomNumber, setLazyRandomNumber] = useState(undefined);
     const [getLazyRandomNumber] = useState(() => cachedExpression(Math.random));
-    const getGetLazyRandomNumber = () => getLazyRandomNumber ?? (() => Object.assign(() => undefined, {invalidate: () => undefined}));
+    const getGetLazyRandomNumber = () =>
+        getLazyRandomNumber ??
+        (() => Object.assign(() => undefined, { invalidate: () => undefined }));
 
     // ============================================================================================================================================================================================================<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     return (
-        <div style={{padding: "50px"}}>
+        <div style={{ padding: "50px" }}>
             <Button>mui button</Button>
-            <NestedDialog/>
+            <NestedDialog />
             <h1>lazy test</h1>
-            <button onClick={() => setLazyRandomNumber(getGetLazyRandomNumber()())}>lazy random number</button>
-            <button onClick={() => getGetLazyRandomNumber().invalidate()}>invalidate lazy random number</button>
+            <button
+                onClick={() => setLazyRandomNumber(getGetLazyRandomNumber()())}
+            >
+                lazy random number
+            </button>
+            <button onClick={() => getGetLazyRandomNumber().invalidate()}>
+                invalidate lazy random number
+            </button>
             {lazyRandomNumber}
 
-
             <h1>stopwatch test</h1>
-            <button
-                onClick={() => setShowStopwatch(!showStopwatch)}>{showStopwatch ? "Close Stopwatch" : "Open Stopwatch"}</button>
-            {showStopwatch && <StopwatchGui/>}
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+            <button onClick={() => setShowStopwatch(!showStopwatch)}>
+                {showStopwatch ? "Close Stopwatch" : "Open Stopwatch"}
+            </button>
+            {showStopwatch && <StopwatchGui />}
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
 
             {/*{showTest &&*/}
             {/*<DerendersStateTest onTest={() => {*/}
@@ -375,48 +347,62 @@ const App = () => {
             {/*    setTimeout(() => setShowTest(true), 2000);*/}
             {/*}}/>}*/}
 
-
-            <button onClick={() => toggle(showTimingHookTest, setShowTimingHookTestSteve)}
-                    style={{padding: "70"}}>timing hooks test
+            <button
+                onClick={() =>
+                    toggle(showTimingHookTest, setShowTimingHookTestSteve)
+                }
+                style={{ padding: "70" }}
+            >
+                timing hooks test
             </button>
 
-
-            {showTimingHookTest && <TimingHookTest/>}
+            {showTimingHookTest && <TimingHookTest />}
             <div>
                 <p>Pargraph inside a div!@</p>
             </div>
             <Box>
-                <Typography>
-                    typography in a box
-                </Typography>
+                <Typography>typography in a box</Typography>
             </Box>
-
 
             <Box height={"40vh"} border={"5px solid black"}>
                 <Box display={"flex"} flexDirection={"column"} height={"100%"}>
-                    <AppBar
-                        position={"static"}><Toolbar><Button>save</Button><Button>edit</Button><Button>document</Button><Typography>special
-                        special special special special special special special special special special special special
-                        special special </Typography> </Toolbar></AppBar>
+                    <AppBar position={"static"}>
+                        <Toolbar>
+                            <Button>save</Button>
+                            <Button>edit</Button>
+                            <Button>document</Button>
+                            <Typography>
+                                special special special special special special
+                                special special special special special special
+                                special special special{" "}
+                            </Typography>{" "}
+                        </Toolbar>
+                    </AppBar>
 
-                        <img src={companyLogo} style={{flexShrink: 2, overflow: "hidden"}}/>
-                    <Box border={"3px solid blue"} flexGrow={1} flexShrink={1} minHeight={0}>
-
-
-                        <DataGrid dataSource={customers}
-                                  keyExpr={"id"}
-                                  height={"100%"}
-                                  style={{height:"20px"}}
+                    <img
+                        src={companyLogo}
+                        style={{ flexShrink: 2, overflow: "hidden" }}
+                    />
+                    <Box
+                        border={"3px solid blue"}
+                        flexGrow={1}
+                        flexShrink={1}
+                        minHeight={0}
+                    >
+                        <DataGrid
+                            dataSource={customers}
+                            keyExpr={"id"}
+                            height={"100%"}
+                            style={{ height: "20px" }}
                         >
-
-                            <FilterRow visible={true}/>
-                            <HeaderFilter visible={true}/>
+                            <FilterRow visible={true} />
+                            <HeaderFilter visible={true} />
                             <Pager
                                 allowedPageSizes={[10, 25, 50, 100]}
                                 showPageSizeSelector={true}
                                 visible={true}
                             />
-                            <Paging defaultPageSize={15} defaultPageIndex={0}/>
+                            <Paging defaultPageSize={15} defaultPageIndex={0} />
                             <Selection
                                 mode={"multiple"}
                                 allowSelectAll={false}
@@ -463,39 +449,39 @@ const App = () => {
                 </Box>
             </Box>
 
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
             <BoundedSlider
                 lowerBound={110}
                 upperBound={167}
                 value={sliderValue}
                 onChange={(newValue) => setSliderValue(newValue)}
-                style={{width: "300px", margin: "20px"}}
+                style={{ width: "300px", margin: "20px" }}
             />
             {sliderValue}
 
-            <br/>
-            <br/>
-            <br/>
+            <br />
+            <br />
+            <br />
             <DynamicSlider
-                style={{margin: "30px", width: "50vw"}}
-                defaultLowerBound={.1}
+                style={{ margin: "30px", width: "50vw" }}
+                defaultLowerBound={0.1}
                 defaultUpperBound={5}
                 defaultValue={1}
                 hardLowerBound={-1000}
                 hardUpperBound={1000}
             />
-            <br/>
-            <br/>
+            <br />
+            <br />
             <p>{someObject.foo}</p>
             <button
                 onClick={() =>
