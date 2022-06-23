@@ -16,6 +16,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@types/web": "0.0.67",
     "clsx": "^1.1.1",
     "devextreme": "^21.2.4",
     "devextreme-react": "^21.2.4",
