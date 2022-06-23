@@ -43,6 +43,8 @@ console.log("ling:",[...linqable.map((n, i) => n + i).sort((a, b) => a - b)]);
 console.log([...linqable.map((n, i) => n + i)])
 console.log([...linqable.map((n, i) => n + i).filter((n) => n % 2 === 0)])
 
+
+
 function StopwatchGui() {
     const stopwatch = useConst(new Stopwatch());
     const [timeElapsed, setTimeElapsed] = useState(0);
