@@ -1,5 +1,4 @@
 // to help address the different implementation of performance.now between browser and node.
-
 /** @returns A timestamp measured in milliseconds. */
 const now = () => window.performance.now();
 
@@ -48,13 +47,13 @@ export default class Stopwatch {
      * Toggles whether the stopwatch is running.
      * @return Whether the stopwatch is running now.
      */
-    public readonly startStop = (): boolean => {
+    public readonly startStop = () => {
         if (this._running) {
-            this.stopTime = now();
-            return (this._running = false);
+            this.stop();
+            return this._running;
         } else {
-            this.earlyTime += now() - this.stopTime;
-            return (this._running = true);
+            this.start();
+            return this._running;
         }
     };
 
