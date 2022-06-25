@@ -1,9 +1,11 @@
 console.log("start");
 
-export function iterableFrom<T>(generatorGenerator: () => Generator<T>): Iterable<T>{
+export function iterableFrom<T>(
+    generatorGenerator: () => Generator<T>
+): Iterable<T> {
     return {
-        [Symbol.iterator]: generatorGenerator
-    }
+        [Symbol.iterator]: generatorGenerator,
+    };
 }
 
 export class EmptyIterable<T> implements Iterable<T> {
@@ -15,12 +17,25 @@ const emptyAnyIterable = new EmptyIterable<any>();
 export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     implements Iterable<T>
 {
-    private constructor(iterable?: IT & Iterable<T>) {
-        this.items = iterable;
+    // private constructor(iterable?: IT & Iterable<T>) {
+    //     this.items = iterable;
+    // }
+
+    private constructor(iterableGetter: () => IT & Iterable<T>) {
+        this.itemsGetter = iterableGetter;
     }
 
-    public readonly items: IT;
-
+    // public readonly items: IT;
+    private _items: IT;
+    private itemsSet: boolean = false;
+    private itemsGetter: () => IT & Iterable<T>;
+    public get items() {
+        if (this.itemsSet) return this._items;
+        this._items = this.itemsGetter();
+        this.itemsGetter = undefined;
+        this.itemsSet = true;
+        return this._items;
+    }
     public [Symbol.iterator]() {
         if (this.items == null) {
             return emptyAnyIterable[Symbol.iterator]();
@@ -43,8 +58,16 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         return Linqable.of(items);
     }
 
-    public static of<T, IT extends Iterable<T> = Iterable<T>>(items?: IT & Iterable<T>) {
-        return new Linqable<T, IT>(items);
+    public static of<T, IT extends Iterable<T> = Iterable<T>>(
+        items?: IT & Iterable<T>
+    ) {
+        return new Linqable<T, IT>(() => items);
+    }
+
+    public static lazyOf<T, IT extends Iterable<T> = Iterable<T>>(
+        itemsGetter: () => IT & Iterable<T>
+    ) {
+        return new Linqable(itemsGetter);
     }
 
     /**
@@ -131,14 +154,11 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public sort(comparator?: (a: T, b: T) => number) {
-        const self = this;
-        return Linqable.from(function* () {
-            // TODO there's probably some efficient algorithm for this, at least use a sorted set
-            const array = [...self];
+        return Linqable.lazyOf(() => {
+            const array = this.toArray();
             array.sort(comparator);
-
-            for (const item of array) yield item;
-        });
+            return array;
+        })
     }
 
     public concat(other: Iterable<T>) {
@@ -282,20 +302,21 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public groupBy<K>(grouper: (item: T, index: number) => K) {
-        let groups: Map<K, T[]> = new Map<K, T[]>();
-        let index = 0;
+        return Linqable.lazyOf(() => {
+            let groups: Map<K, T[]> = new Map<K, T[]>();
+            let index = 0;
 
-        for (const item of this) {
-            const key = grouper(item, index++);
-            const group = groups.get(key);
-            if (group === undefined) {
-                groups.set(key, [item]);
-            } else {
-                group.push(item);
+            for (const item of this) {
+                const key = grouper(item, index++);
+                const group = groups.get(key);
+                if (group === undefined) {
+                    groups.set(key, [item]);
+                } else {
+                    group.push(item);
+                }
             }
-        }
-
-        return Linqable.of(groups);
+            return groups;
+        });
     }
 
     public find(seeker: (item: T, index: number) => boolean) {
@@ -403,11 +424,11 @@ const l = ll.reduce(
 console.log(2);
 const lc = l.chunk(2);
 console.log("l", [...l]);
-console.log([...lc.map(item => item[1] ?? item[0])]);
+console.log([...lc.map((item) => item[1] ?? item[0])]);
 
-const linqable = Linqable.of([5,3,6,8,2,4,5]);
-console.log("ling:",[...linqable.map((n, i) => n + i).sort((a, b) => a - b)]);
-console.log([...linqable.map((n, i) => n + i)])
-console.log([...linqable.map((n, i) => n + i).filter((n) => n % 2 === 0)])
-console.log([...linqable.groupBy((item) => item === 5)])
+const linqable = Linqable.of([5, 3, 6, 8, 2, 4, 5]);
+console.log("ling:", [...linqable.map((n, i) => n + i).sort((a, b) => a - b)]);
+console.log([...linqable.map((n, i) => n + i)]);
+console.log([...linqable.map((n, i) => n + i).filter((n) => n % 2 === 0)]);
+console.log([...linqable.groupBy((item) => item === 5)]);
 console.log(3);
