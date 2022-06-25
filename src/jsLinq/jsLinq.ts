@@ -1,14 +1,8 @@
 console.log("start");
 
-export class Iter<T> implements Iterable<T> {
-    constructor(generatorGenerator: () => Generator<T>) {
-        this.generatorGenerator = generatorGenerator;
-    }
-
-    private readonly generatorGenerator: () => Generator<T>;
-
-    public [Symbol.iterator]() {
-        return this.generatorGenerator();
+export function iterableFrom(generatorGenerator: () => Generator<T>): Iterable<T>{
+    return {
+        [Symbol.iterator]: generatorGenerator
     }
 }
 
@@ -16,10 +10,12 @@ export class EmptyIterable<T> implements Iterable<T> {
     public *[Symbol.iterator]() {}
 }
 
+const emptyAnyIterable = new EmptyIterable<any>();
+
 export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     implements Iterable<T>
 {
-    constructor(iterable?: IT & Iterable<T>) {
+    private constructor(iterable?: IT & Iterable<T>) {
         this.items = iterable;
     }
 
@@ -27,14 +23,14 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
 
     public [Symbol.iterator]() {
         if (this.items == null) {
-            return new EmptyIterable<T>()[Symbol.iterator]();
+            return emptyAnyIterable[Symbol.iterator]();
         } else {
             return this.items[Symbol.iterator]();
         }
     }
 
     public static from<T>(generatorGenerator: () => Generator<T>) {
-        return new Linqable(new Iter(generatorGenerator));
+        return Linqable.of(iterableFrom(generatorGenerator));
     }
 
     public static fromGenerator<T>(generator: Generator<T>) {
@@ -44,11 +40,11 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
             items.push(next.value);
             next = generator.next();
         }
-        return new Linqable(items);
+        return Linqable.of(items);
     }
 
-    public static of<T>(items: Iterable<T>) {
-        return new Linqable(items);
+    public static of<T, IT extends Iterable<T> = Iterable<T>>(items?: IT & Iterable<T>) {
+        return new Linqable<T, IT>(items);
     }
 
     /**
@@ -272,16 +268,13 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     public chunk(size: number) {
         const self = this;
         return Linqable.from(function* () {
-            const iterator = self[Symbol.iterator]();
-            let next = iterator.next();
-            while (!next.done) {
-                const chunk = [];
-                for (let i = 0; i < size; i++) {
-                    chunk.push(next.value);
-                    next = iterator.next();
-                    if (next.done) break;
+            let chunk: T[] = [];
+            for (const item of this) {
+                chunk.push(item);
+                if (chunk.length >= size) {
+                    yield Linqable.of(chunk);
+                    chunk = [];
                 }
-                yield new Linqable<T, T[]>(chunk);
             }
         });
     }
@@ -300,7 +293,7 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
             }
         }
 
-        return new Linqable(groups);
+        return Linqable.of(groups);
     }
 
     public find(seeker: (item: T, index: number) => boolean) {
@@ -331,10 +324,10 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public distinct() {
-        const past = new Set<T>();
         const self = this;
 
         return Linqable.from(function* () {
+            const past = new Set<T>();
             for (const item of self) {
                 if (past.has(item)) continue;
                 past.add(item);
@@ -360,17 +353,46 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         }
         return result;
     }
+
+    public skip(count: number) {
+        return Linqable.from(function* () {
+            let skipped = 0;
+            for (const item of this) {
+                if (skipped < count) {
+                    skipped++;
+                    continue;
+                }
+                yield item;
+            }
+        });
+    }
+
+    public skipWhile(test: (item: T) => boolean) {
+        return Linqable.from(function* () {
+            let skipping = true;
+            for (const item of this) {
+                if (!skipping) {
+                    yield item;
+                } else {
+                    if (!test(item)) {
+                        skipping = false;
+                        yield item;
+                    }
+                }
+            }
+        });
+    }
 }
 
-const ll = new Linqable([
-    new Linqable([1, 2, 3]),
-    new Linqable([4, 5]),
-    new Linqable([6, 7, 8, 9]),
+const ll = Linqable.of([
+    Linqable.of([1, 2, 3]),
+    Linqable.of([4, 5]),
+    Linqable.of([6, 7, 8, 9]),
 ]);
 
 const l = ll.reduce(
     (total, current) => total.concat(current),
-    new Linqable<number>()
+    Linqable.of<number, Iterable<number>>()
 );
 
 const lc = l.chunk(2);
