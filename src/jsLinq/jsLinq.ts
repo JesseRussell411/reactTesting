@@ -405,14 +405,6 @@ const lc = l.chunk(2);
 console.log("l", [...l]);
 console.log([...lc.map(item => item[1] ?? item[0])]);
 
-
-// for (const chunk of lc) {
-//     let thing = chunk.items[1];
-//     if (thing === undefined) thing = chunk.items[0];
-//     console.log(thing);
-// }
-// console.log(3);
-
 const linqable = Linqable.of([5,3,6,8,2,4,5]);
 console.log("ling:",[...linqable.map((n, i) => n + i).sort((a, b) => a - b)]);
 console.log([...linqable.map((n, i) => n + i)])
