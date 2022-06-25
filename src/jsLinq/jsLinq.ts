@@ -180,7 +180,7 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
 
     public repeat(times: number) {
         times = Math.trunc(times);
-        if (times === 0) return new Linqable<T>();
+        if (times === 0) return Linqable.of<T>();
         if (times < 0) return this.reverse().repeat(-times);
         const self = this;
         return Linqable.from(function* () {
