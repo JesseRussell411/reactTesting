@@ -1,6 +1,6 @@
 console.log("start");
 
-export function iterableFrom(generatorGenerator: () => Generator<T>): Iterable<T>{
+export function iterableFrom<T>(generatorGenerator: () => Generator<T>): Iterable<T>{
     return {
         [Symbol.iterator]: generatorGenerator
     }
@@ -269,18 +269,20 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         const self = this;
         return Linqable.from(function* () {
             let chunk: T[] = [];
-            for (const item of this) {
+            for (const item of self) {
                 chunk.push(item);
                 if (chunk.length >= size) {
                     yield Linqable.of(chunk);
                     chunk = [];
                 }
             }
+
+            if (chunk.length > 0) yield Linqable.of(chunk);
         });
     }
 
     public groupBy<K>(grouper: (item: T, index: number) => K) {
-        const groups = new Map<K, T[]>();
+        let groups: Map<K, T[]> = new Map<K, T[]>();
         let index = 0;
 
         for (const item of this) {
@@ -355,9 +357,10 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public skip(count: number) {
+        const self = this;
         return Linqable.from(function* () {
             let skipped = 0;
-            for (const item of this) {
+            for (const item of self) {
                 if (skipped < count) {
                     skipped++;
                     continue;
@@ -368,9 +371,10 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public skipWhile(test: (item: T) => boolean) {
+        const self = this;
         return Linqable.from(function* () {
             let skipping = true;
-            for (const item of this) {
+            for (const item of self) {
                 if (!skipping) {
                     yield item;
                 } else {
@@ -389,16 +393,29 @@ const ll = Linqable.of([
     Linqable.of([4, 5]),
     Linqable.of([6, 7, 8, 9]),
 ]);
+console.log(1);
 
 const l = ll.reduce(
     (total, current) => total.concat(current),
     Linqable.of<number, Iterable<number>>()
 );
 
+console.log(2);
 const lc = l.chunk(2);
 console.log("l", [...l]);
-for (const chunk of lc) {
-    let thing = chunk.items[1];
-    if (thing === undefined) thing = chunk.items[0];
-    console.log(thing);
-}
+console.log([...lc.map(item => item[1] ?? item[0])]);
+
+
+// for (const chunk of lc) {
+//     let thing = chunk.items[1];
+//     if (thing === undefined) thing = chunk.items[0];
+//     console.log(thing);
+// }
+// console.log(3);
+
+const linqable = Linqable.of([5,3,6,8,2,4,5]);
+console.log("ling:",[...linqable.map((n, i) => n + i).sort((a, b) => a - b)]);
+console.log([...linqable.map((n, i) => n + i)])
+console.log([...linqable.map((n, i) => n + i).filter((n) => n % 2 === 0)])
+console.log([...linqable.groupBy((item) => item === 5)])
+console.log(3);

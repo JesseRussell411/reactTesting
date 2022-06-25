@@ -38,7 +38,7 @@ const set1 = immutable.Set([1, 7, 4, 9, 11]);
 console.log([...set1.add(8).keys()]);
 console.log([...set1.values()]);
 
-const linqable = new Linqable([5,3,6,8,2,4,5]);
+const linqable = Linqable.of([5,3,6,8,2,4,5]);
 console.log("ling:",[...linqable.map((n, i) => n + i).sort((a, b) => a - b)]);
 console.log([...linqable.map((n, i) => n + i)])
 console.log([...linqable.map((n, i) => n + i).filter((n) => n % 2 === 0)])
