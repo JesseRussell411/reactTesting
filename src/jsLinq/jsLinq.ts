@@ -4,7 +4,9 @@ export class Iter<T> implements Iterable<T> {
     constructor(generatorGenerator: () => Generator<T>) {
         this.generatorGenerator = generatorGenerator;
     }
+
     private readonly generatorGenerator: () => Generator<T>;
+
     public [Symbol.iterator]() {
         return this.generatorGenerator();
     }
@@ -18,46 +20,92 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     implements Iterable<T>
 {
     constructor(iterable?: IT & Iterable<T>) {
-        this.iterable = iterable;
+        this.items = iterable;
     }
 
-    public readonly iterable: IT | undefined | null;
+    public readonly items: IT;
 
     public [Symbol.iterator]() {
-        if (this.iterable == null) {
+        if (this.items == null) {
             return new EmptyIterable<T>()[Symbol.iterator]();
         } else {
-            return this.iterable[Symbol.iterator]();
+            return this.items[Symbol.iterator]();
         }
+    }
+
+    public static from<T>(generatorGenerator: () => Generator<T>) {
+        return new Linqable(new Iter(generatorGenerator));
+    }
+
+    public static fromGenerator<T>(generator: Generator<T>) {
+        const items = [];
+        let next = generator.next();
+        while (!next.done) {
+            items.push(next.value);
+            next = generator.next();
+        }
+        return new Linqable(items);
+    }
+
+    public static of<T>(items: Iterable<T>) {
+        return new Linqable(items);
     }
 
     /**
      * @returns The iterable as an array. If the iterable is already an array, the iterable itself will be returned; in which case, modifying the array will modify the iterable.
      */
     public asArray() {
-        if (Array.isArray(this.iterable)) {
-            return this.iterable as T[];
+        if (Array.isArray(this.items)) {
+            return this.items as T[];
         } else {
             return [...this];
         }
     }
 
+    /**
+     * @returns The iterable as a set. If the iterable is already a set, the iterable itself will be returned; in which case, modifying the set will modify the iterable.
+     */
+    public asSet() {
+        if (this.items instanceof Set) {
+            return this.items as Set<T>;
+        } else {
+            return new Set<T>(this);
+        }
+    }
+
+    public toArray() {
+        return [...this];
+    }
+
+    public toSet() {
+        return new Set(this);
+    }
+
+    public toMap<K, V>(
+        keySelector: (item: T) => K = (item) => item[0],
+        valueSelector: (item: T) => V = (item) => item[1]
+    ) {
+        const result = new Map<K, V>();
+        for (const item of this) {
+            result.set(keySelector(item), valueSelector(item));
+        }
+        return result;
+    }
+
     public map<R>(callback: (item: T, index: number) => R) {
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                let index = 0;
-                for (const item of self) {
-                    yield callback(item, index++);
-                }
-            })
-        );
+        return Linqable.from(function* () {
+            let index = 0;
+            for (const item of self) {
+                yield callback(item, index++);
+            }
+        });
     }
 
     public forEach(callback: (item: T, index: number) => void) {
         const self = this;
         let index = 0;
-        for (const item of self.iterable) {
+        for (const item of self.items) {
             callback(item, index++);
         }
 
@@ -78,48 +126,40 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
 
     public filter(callback: (item: T, index: number) => boolean) {
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                let index = 0;
-                for (const item of self) {
-                    if (callback(item, index++)) yield item;
-                }
-            })
-        );
+        return Linqable.from(function* () {
+            let index = 0;
+            for (const item of self) {
+                if (callback(item, index++)) yield item;
+            }
+        });
     }
 
     public sort(comparator?: (a: T, b: T) => number) {
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                // TODO there's probably some efficient algorithm for this, at least use a sorted set
-                const array = [...self];
-                array.sort(comparator);
+        return Linqable.from(function* () {
+            // TODO there's probably some efficient algorithm for this, at least use a sorted set
+            const array = [...self];
+            array.sort(comparator);
 
-                for (const item of array) yield item;
-            })
-        );
+            for (const item of array) yield item;
+        });
     }
 
     public concat(other: Iterable<T>) {
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                for (const item of self) yield item;
-                for (const item of other) yield item;
-            })
-        );
+        return Linqable.from(function* () {
+            for (const item of self) yield item;
+            for (const item of other) yield item;
+        });
     }
 
     public reverse() {
         const array = [...this];
-        return new Linqable(
-            new Iter(function* () {
-                for (let i = array.length - 1; i >= 0; i--) {
-                    yield array[i];
-                }
-            })
-        );
+        return Linqable.from(function* () {
+            for (let i = array.length - 1; i >= 0; i--) {
+                yield array[i];
+            }
+        });
     }
 
     public repeat(times: number) {
@@ -127,15 +167,13 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         if (times === 0) return new Linqable<T>();
         if (times < 0) return this.reverse().repeat(-times);
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                for (let i = 0; i < times; i++) {
-                    for (const item of self) {
-                        yield item;
-                    }
+        return Linqable.from(function* () {
+            for (let i = 0; i < times; i++) {
+                for (const item of self) {
+                    yield item;
                 }
-            })
-        );
+            }
+        });
     }
 
     public head(numberOfItems: number = 1) {
@@ -143,17 +181,15 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         if (numberOfItems < 0)
             throw new Error("Cannot return less than zero items.");
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                let i = 0;
-                for (const item of self) {
-                    if (i++ < numberOfItems) {
-                        yield item;
-                    } else break;
-                }
-                while (i++ < numberOfItems) yield undefined;
-            })
-        );
+        return Linqable.from(function* () {
+            let i = 0;
+            for (const item of self) {
+                if (i++ < numberOfItems) {
+                    yield item;
+                } else break;
+            }
+            while (i++ < numberOfItems) yield undefined;
+        });
     }
 
     public tail(numberOfItems: number = 1) {
@@ -163,23 +199,17 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
 
         // TODO do this better with a limited-size queue
         const array = [...this];
-        return new Linqable({
-            [Symbol.iterator]: function* () {
-                const excess = numberOfItems - array.length;
-                if (excess > 0) {
-                    for (let i = 0; i < excess; i++) {
-                        yield undefined;
-                    }
-                    for (const item of array) yield item;
+        return Linqable.from(function* () {
+            const excess = numberOfItems - array.length;
+            if (excess > 0) {
+                for (let i = 0; i < excess; i++) {
+                    yield undefined;
                 }
-                for (
-                    let i = array.length - numberOfItems;
-                    i < array.length;
-                    i++
-                ) {
-                    yield array[i];
-                }
-            },
+                for (const item of array) yield item;
+            }
+            for (let i = array.length - numberOfItems; i < array.length; i++) {
+                yield array[i];
+            }
         });
     }
 
@@ -189,9 +219,9 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public last(): T | undefined {
-        if (Array.isArray(this.iterable)) {
-            if (this.iterable.length === 0) return undefined;
-            return this.iterable[this.iterable.length - 1];
+        if (Array.isArray(this.items)) {
+            if (this.items.length === 0) return undefined;
+            return this.items[this.items.length - 1];
         } else {
             const array = [...this];
             if (array.length === 0) return undefined;
@@ -204,37 +234,35 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         length = Math.trunc(length);
 
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                let resultLength = 0;
-                while (start < 0 && resultLength < length) {
-                    start++;
-                    resultLength++;
-                    yield undefined;
-                }
+        return Linqable.from(function* () {
+            let resultLength = 0;
+            while (start < 0 && resultLength < length) {
+                start++;
+                resultLength++;
+                yield undefined;
+            }
 
-                for (const item of self) {
-                    if (start > 0) {
-                        start--;
-                        continue;
-                    }
-                    if (resultLength < length) {
-                        resultLength++;
-                        yield item;
-                    } else break;
+            for (const item of self) {
+                if (start > 0) {
+                    start--;
+                    continue;
                 }
-
-                while (resultLength < length) {
+                if (resultLength < length) {
                     resultLength++;
-                    yield undefined;
-                }
-            })
-        );
+                    yield item;
+                } else break;
+            }
+
+            while (resultLength < length) {
+                resultLength++;
+                yield undefined;
+            }
+        });
     }
 
     public length(): number {
-        if (Array.isArray(this.iterable)) return this.iterable.length;
-        if (this.iterable instanceof Set) return this.iterable.size;
+        if (Array.isArray(this.items)) return this.items.length;
+        if (this.items instanceof Set) return this.items.size;
         let length = 0;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const item of this) length++;
@@ -243,21 +271,94 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
 
     public chunk(size: number) {
         const self = this;
-        return new Linqable(
-            new Iter(function* () {
-                const iterator = self[Symbol.iterator]();
-                let next = iterator.next();
-                while (!next.done) {
-                    const chunk = [];
-                    for (let i = 0; i < size; i++) {
-                        chunk.push(next.value);
-                        next = iterator.next();
-                        if (next.done) break;
-                    }
-                    yield new Linqable<T, T[]>(chunk);
+        return Linqable.from(function* () {
+            const iterator = self[Symbol.iterator]();
+            let next = iterator.next();
+            while (!next.done) {
+                const chunk = [];
+                for (let i = 0; i < size; i++) {
+                    chunk.push(next.value);
+                    next = iterator.next();
+                    if (next.done) break;
                 }
-            })
-        );
+                yield new Linqable<T, T[]>(chunk);
+            }
+        });
+    }
+
+    public groupBy<K>(grouper: (item: T, index: number) => K) {
+        const groups = new Map<K, T[]>();
+        let index = 0;
+
+        for (const item of this) {
+            const key = grouper(item, index++);
+            const group = groups.get(key);
+            if (group === undefined) {
+                groups.set(key, [item]);
+            } else {
+                group.push(item);
+            }
+        }
+
+        return new Linqable(groups);
+    }
+
+    public find(seeker: (item: T, index: number) => boolean) {
+        let index = 0;
+        for (const item of this) {
+            if (seeker(item, index++)) return item;
+        }
+        return undefined;
+    }
+
+    public includes(item: T) {
+        if (this.items instanceof Set) return this.items.has(item);
+        if (Array.isArray(this.items)) return this.items.includes(item);
+        for (const localItem of this)
+            if (Object.is(item, localItem)) return true;
+
+        return false;
+    }
+
+    public itemAt(index: number): T | undefined {
+        index = Math.trunc(index);
+        if (Array.isArray(this.items)) return this.items[index];
+        let currentIndex = 0;
+        for (const item of this) {
+            if (currentIndex++ === index) return item;
+        }
+        return undefined;
+    }
+
+    public distinct() {
+        const past = new Set<T>();
+        const self = this;
+
+        return Linqable.from(function* () {
+            for (const item of self) {
+                if (past.has(item)) continue;
+                past.add(item);
+                yield item;
+            }
+        });
+    }
+
+    public empty() {
+        let result = true;
+        for (const item of this) {
+            result = false;
+            break;
+        }
+        return result;
+    }
+
+    public notEmpty() {
+        let result = false;
+        for (const item of this) {
+            result = true;
+            break;
+        }
+        return result;
     }
 }
 
@@ -267,7 +368,6 @@ const ll = new Linqable([
     new Linqable([6, 7, 8, 9]),
 ]);
 
-
 const l = ll.reduce(
     (total, current) => total.concat(current),
     new Linqable<number>()
@@ -276,7 +376,7 @@ const l = ll.reduce(
 const lc = l.chunk(2);
 console.log("l", [...l]);
 for (const chunk of lc) {
-    let thing = chunk.iterable[1];
-    if (thing === undefined) thing = chunk.iterable[0];
+    let thing = chunk.items[1];
+    if (thing === undefined) thing = chunk.items[0];
     console.log(thing);
 }
