@@ -39,7 +39,7 @@ console.log([...set1.add(8).keys()]);
 console.log([...set1.values()]);
 
 const linqable = Linqable.of([5,3,6,8,2,4,5]);
-console.log("ling:",[...linqable.map((n, i) => n + i).sort((a, b) => a - b)]);
+console.log("ling:",[...linqable.map((n, i) => n + i).sorted((a, b) => a - b)]);
 console.log([...linqable.map((n, i) => n + i)])
 console.log([...linqable.map((n, i) => n + i).filter((n) => n % 2 === 0)])
 console.log([...linqable.groupBy((item) => item === 5)])
