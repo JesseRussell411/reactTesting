@@ -1,3 +1,6 @@
+import * as util from "util";
+
+
 console.log("start");
 
 export function iterableFrom<T>(
@@ -27,9 +30,15 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     private itemsGetter: () => IT & Iterable<T>;
 
     public get items() {
+        // check if items is already set
         if (this.itemsSet) return this._items;
+
+        // set items
         this._items = this.itemsGetter();
+
+        // help the garbage collector
         this.itemsGetter = undefined;
+
         this.itemsSet = true;
         return this._items;
     }
@@ -121,13 +130,18 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public reduce<R>(
-        callback: (previousResult: R, currentItem: T, index: number) => R,
+        callback: (
+            previousResult: R,
+            currentItem: T,
+            index: number,
+            self: Linqable<T, IT>
+        ) => R,
         initialValue?: R
     ): R {
         let result = initialValue;
         let index = 0;
         for (const item of this) {
-            result = callback(result, item, index++);
+            result = callback(result, item, index++, this);
         }
         return result;
     }
@@ -145,10 +159,11 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public sorted(comparator?: (a: T, b: T) => number) {
-        return Linqable.lazyOf(() => {
-            const array = this.toArray();
+        const self = this;
+        return Linqable.from(function* () {
+            const array = self.toArray();
             array.sort(comparator);
-            return array;
+            for (const item of array) yield item;
         });
     }
 
@@ -295,22 +310,31 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
 
     public groupBy<K>(
         grouper: (item: T, index: number, self: Linqable<T, IT>) => K
-    ) {
+    ): Linqable<[K, Linqable<T, T[]>]> {
         const self = this;
+        return Linqable.from(function* () {
+            for (const entry of self.indexBy(grouper)) yield entry;
+        });
+    }
+
+    public indexBy<K>(
+        indexer: (item: T, index: number, self: Linqable<T, IT>) => K
+    ): Linqable<[K, Linqable<T, T[]>], Map<K, Linqable<T, T[]>>> {
         return Linqable.lazyOf(() => {
-            let groups: Map<K, T[]> = new Map<K, T[]>();
+            const itemIndex = new Map<K, Linqable<T, T[]>>();
             let index = 0;
 
-            for (const item of self) {
-                const key = grouper(item, index++, self);
-                const group = groups.get(key);
+            for (const item of this) {
+                const key = indexer(item, index++, this);
+                const group = itemIndex.get(key);
                 if (group === undefined) {
-                    groups.set(key, [item]);
+                    itemIndex.set(key, Linqable.of([item]));
                 } else {
-                    group.push(item);
+                    group.items.push(item);
                 }
             }
-            return groups;
+
+            return itemIndex;
         });
     }
 
@@ -358,21 +382,11 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 
     public none() {
-        let result = true;
-        for (const item of this) {
-            result = false;
-            break;
-        }
-        return result;
+        return this[Symbol.iterator]().next().done;
     }
 
     public any() {
-        let result = false;
-        for (const item of this) {
-            result = true;
-            break;
-        }
-        return result;
+        return !this[Symbol.iterator]().next().done;
     }
 
     public skip(count: number) {
@@ -495,12 +509,6 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         });
     }
 
-    public newItemStructure<T2, IT2 extends Iterable<T2>>(
-        modifier: (self: Linqable<T, IT>) => IT2 & Iterable<T2>
-    ) {
-        return Linqable.lazyOf(() => modifier(this));
-    }
-
     public with(required: Iterable<T>) {
         const self = this;
         return Linqable.from(function* () {
@@ -516,9 +524,9 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         });
     }
 
-    public without(excluding: Iterable<T>){
+    public without(excluding: Iterable<T>) {
         const self = this;
-        return Linqable.from(function * () {
+        return Linqable.from(function* () {
             // TODO can do this slightly more efficiently maybe.
             const setOfExcluding = asSet(excluding);
             for (const item of self) {
@@ -550,8 +558,14 @@ export function isArray<T>(iterable?: Iterable<T>): iterable is T[] {
     return Array.isArray(iterable);
 }
 
+export function isLinqable<T>(iterable?: Iterable<T>): iterable is Linqable<T> {
+    return iterable instanceof Linqable;
+}
+
 export function asSet<T>(iterable?: Iterable<T>): Set<T> {
-    if (isSet(iterable)) {
+    if (isLinqable(iterable)) {
+        return iterable.asSet();
+    } else if (isSet(iterable)) {
         return iterable;
     } else {
         return new Set(iterable);
@@ -559,10 +573,20 @@ export function asSet<T>(iterable?: Iterable<T>): Set<T> {
 }
 
 export function asArray<T>(iterable?: Iterable<T>): T[] {
-    if (isArray(iterable)) {
+    if (isLinqable(iterable)) {
+        return iterable.asArray();
+    } else if (isArray(iterable)) {
         return iterable;
     } else {
         return [...(iterable ?? [])];
+    }
+}
+
+export function asLinqable<T>(iterable?: Iterable<T>): Linqable<T> {
+    if (isLinqable(iterable)) {
+        return iterable;
+    } else {
+        return Linqable.of(iterable);
     }
 }
 
@@ -614,9 +638,18 @@ console.log([...linqable.map((n, i) => n + i)]);
 console.log([...linqable.map((n, i) => n + i).filter((n) => n % 2 === 0)]);
 console.log([...linqable.groupBy((item) => item === 5)]);
 console.log(3);
-linqable
-    .newItemStructure((self) => new Set(self))
-    .concat([1, 2, 3])
-    .with([1, 2, 20, 3]);
 
 linqable.groupBy((n) => Math.trunc(n / 3));
+console.log("--=-=-====-=----=-=-=-=--=-=-=-=====----=-----=-=-=-=---===-=-");
+console.log("groupby indexby test");
+const testArray = [{name:"greg", age: 7}, {name:"tom", age: 9}, {name:"fred", age: 7}, {name: "chris", age: 9}, {name: "sam", age: 7}];
+const testLinq = Linqable.of(testArray);
+const grouped = testLinq.groupBy(person => person.age);
+const indexed = testLinq.indexBy(person => person.age);
+console.log(util.inspect([...grouped].map(g => [g[0], g[1].asArray()]), true, null, true));
+console.log(util.inspect([...indexed].map(g => [g[0], g[1].asArray()]), true, null, true));
+console.log("--------------");
+testArray.push({name:"ken", age:10});
+console.log(util.inspect([...grouped].map(g => [g[0], g[1].asArray()]), true, null, true));
+console.log(util.inspect([...indexed].map(g => [g[0], g[1].asArray()]), true, null, true));
+
