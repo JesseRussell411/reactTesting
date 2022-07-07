@@ -1,5 +1,5 @@
 import * as util from "util";
-
+import { isIE } from "devextreme-react/core/configuration/utils";
 
 console.log("start");
 
@@ -142,6 +142,28 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         let index = 0;
         for (const item of this) {
             result = callback(result, item, index++, this);
+        }
+        return result;
+    }
+
+    /**
+     * Like reduce, but skips the first item and uses it as the initial value instead.
+     * @param combination
+     */
+    public combine(
+        combination: (
+            previousResult: T,
+            currentItem: T,
+            index: number,
+            self: Linqable<T, IT>
+        ) => T
+    ): T {
+        const itemGenerator = this[Symbol.iterator]();
+        let nextItem = itemGenerator.next();
+        let result: T = nextItem.value;
+        let index = 1;
+        while ((nextItem = itemGenerator.next()).done === false) {
+            result = combination(result, nextItem.value, index++, this);
         }
         return result;
     }
@@ -359,7 +381,13 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
 
     public at(index: number): T | undefined {
         index = Math.trunc(index);
-        if (Array.isArray(this.items)) return this.items[index];
+        if (isArray(this.items)) return this.items[index];
+        if (isLinqable(this.items)) {
+            let current: Linqable<T> = this.items;
+            // javascript doesn't do tail recursion optimization so I gotta do it myself.
+            while (isLinqable(current.items)) current = current.items;
+            return current.at(index);
+        }
         let currentIndex = 0;
         for (const item of this) {
             if (currentIndex++ === index) return item;
@@ -477,7 +505,7 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
         });
     }
 
-    public union(other: Iterable<T>) {
+    public intersection(other: Iterable<T>) {
         const self = this;
         return Linqable.from(function* () {
             const otherCache = new Set<T>();
@@ -550,35 +578,80 @@ export class Linqable<T, IT extends Iterable<T> = Iterable<T>>
     }
 }
 
-export function isSet<T>(iterable?: Iterable<T>): iterable is Set<T> {
+export function combine<T>(
+    items: Iterable<T>,
+    combination: (previousResult: T, currentItem: T) => T
+) {
+    const itemGenerator = items[Symbol.iterator]();
+    let nextItem = itemGenerator.next();
+    let result: T = nextItem.value;
+    while ((nextItem = itemGenerator.next()).done === false) {
+        result = combination(result, nextItem.value);
+    }
+    return result;
+}
+
+/**
+ * Normally when testing whether an iterable is an Array using Array.isArray, typescript will think that it is an any[] even when it knows that the original is Iterable<T>. The type argument is lost. This function preserves the type argument.
+ * @returns Whether the given iterable object is an Array.
+ */
+export function isArray<T>(iterable: Iterable<T>): iterable is T[] {
+    return Array.isArray(iterable);
+}
+
+/**
+ * Normally when testing whether an iterable is a set using instanceof, typescript will think that it is a Set<any> even when it knows that the original is Iterable<T>. The type argument is lost. This function preserves the type argument.
+ * @returns Whether the given iterable object is a Set.
+ * @param iterable
+ */
+export function isSet<T>(iterable: Iterable<T>): iterable is Set<T> {
+    if (iterable instanceof Set) {
+        iterable;
+    }
     return iterable instanceof Set;
 }
 
-export function isArray<T>(iterable?: Iterable<T>): iterable is T[] {
-    return Array.isArray(iterable);
+export function isMap<K, V>(iterable: Iterable<[K, V]>): iterable is Map<K, V> {
+    return iterable instanceof Map;
 }
 
 export function isLinqable<T>(iterable?: Iterable<T>): iterable is Linqable<T> {
     return iterable instanceof Linqable;
 }
 
-export function asSet<T>(iterable?: Iterable<T>): Set<T> {
-    if (isLinqable(iterable)) {
-        return iterable.asSet();
-    } else if (isSet(iterable)) {
-        return iterable;
+/**
+ * @returns The given collection if it is an instance of an Array, or a new Array containing the object's contents if otherwise. **The result is not safe to modify**
+ */
+export function asArray<T>(collection?: Iterable<T>) {
+    if (isLinqable(collection)) {
+        return collection.asArray();
+    } else if (isArray(collection)) {
+        return collection;
     } else {
-        return new Set(iterable);
+        return [...(collection ?? [])];
     }
 }
 
-export function asArray<T>(iterable?: Iterable<T>): T[] {
-    if (isLinqable(iterable)) {
-        return iterable.asArray();
-    } else if (isArray(iterable)) {
-        return iterable;
+/**
+ * @returns The given collection if it is an instance of a Set, or a new Set containing the object's contents if otherwise. **The result is not safe to modify**
+ */
+export function asSet<T>(collection?: Iterable<T>) {
+    if (isLinqable(collection)) {
+        return collection.asSet();
+    } else if (isSet(collection)) {
+        return collection;
     } else {
-        return [...(iterable ?? [])];
+        return new Set(collection);
+    }
+}
+
+export function asMap<K, V>(collection?: Iterable<[K, V]>) {
+    if (isLinqable(collection)) {
+        return asMap(collection.items);
+    } else if (isMap(collection)) {
+        return collection;
+    } else {
+        return new Map(collection);
     }
 }
 
@@ -613,6 +686,58 @@ export function range(start: number, stop?: number, step?: number) {
     });
 }
 
+/**
+ * Combines two collections of values into one set by keeping only the values found in both iterables.
+ * @returns A Set containing the items found in both iterable objects.
+ */
+export function intersection<T>(a: Iterable<T>, b: Iterable<T>) {
+    // iterable will be iterated over to look for shared items in set using set's "has" method.
+    let iterable: Iterable<T>, set: Set<T>;
+
+    // select the best object to be the set (whichever one is already a set or the largest one if their size is known). The other will be Iterable.
+    if (isSet(a) && isSet(b)) {
+        if (a.size > b.size) {
+            iterable = b;
+            set = a;
+        } else {
+            iterable = a;
+            set = b;
+        }
+    } else if (isSet(a)) {
+        iterable = b;
+        set = a;
+    } else if (isSet(b)) {
+        iterable = a;
+        set = b;
+    } else if (isArray(a) && isArray(b)) {
+        if (a.length > b.length) {
+            iterable = b;
+            set = new Set(a);
+        } else {
+            iterable = a;
+            set = new Set(b);
+        }
+    } else {
+        iterable = a;
+        set = new Set(b);
+    }
+
+    const result = new Set<T>();
+    for (const item of iterable) {
+        if (result.size >= set.size) break;
+        if (set.has(item)) {
+            // item is in bother iterables so include it in the output
+            result.add(item);
+        }
+    }
+
+    return result;
+}
+
+export function integerDivide(a: number | bigint, b: number | bigint): bigint {
+    return BigInt(a) / BigInt(b);
+}
+
 const ll = Linqable.of([
     Linqable.of([1, 2, 3]),
     Linqable.of([4, 5]),
@@ -642,14 +767,47 @@ console.log(3);
 linqable.groupBy((n) => Math.trunc(n / 3));
 console.log("--=-=-====-=----=-=-=-=--=-=-=-=====----=-----=-=-=-=---===-=-");
 console.log("groupby indexby test");
-const testArray = [{name:"greg", age: 7}, {name:"tom", age: 9}, {name:"fred", age: 7}, {name: "chris", age: 9}, {name: "sam", age: 7}];
+const testArray = [
+    { name: "greg", age: 7 },
+    { name: "tom", age: 9 },
+    { name: "fred", age: 7 },
+    { name: "chris", age: 9 },
+    { name: "sam", age: 7 },
+];
 const testLinq = Linqable.of(testArray);
-const grouped = testLinq.groupBy(person => person.age);
-const indexed = testLinq.indexBy(person => person.age);
-console.log(util.inspect([...grouped].map(g => [g[0], g[1].asArray()]), true, null, true));
-console.log(util.inspect([...indexed].map(g => [g[0], g[1].asArray()]), true, null, true));
+const grouped = testLinq.groupBy((person) => person.age);
+const indexed = testLinq.indexBy((person) => person.age);
+console.log(
+    util.inspect(
+        [...grouped].map((g) => [g[0], g[1].asArray()]),
+        true,
+        null,
+        true
+    )
+);
+console.log(
+    util.inspect(
+        [...indexed].map((g) => [g[0], g[1].asArray()]),
+        true,
+        null,
+        true
+    )
+);
 console.log("--------------");
-testArray.push({name:"ken", age:10});
-console.log(util.inspect([...grouped].map(g => [g[0], g[1].asArray()]), true, null, true));
-console.log(util.inspect([...indexed].map(g => [g[0], g[1].asArray()]), true, null, true));
-
+testArray.push({ name: "ken", age: 10 });
+console.log(
+    util.inspect(
+        [...grouped].map((g) => [g[0], g[1].asArray()]),
+        true,
+        null,
+        true
+    )
+);
+console.log(
+    util.inspect(
+        [...indexed].map((g) => [g[0], g[1].asArray()]),
+        true,
+        null,
+        true
+    )
+);
