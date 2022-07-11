@@ -1,5 +1,6 @@
 import { isArray, isSet, asSet, iter, setAndGet } from "./Utils";
 import { Linqable } from "./jsLinq";
+import { and } from "../utils/betterLogic";
 
 export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
     implements Iterable<T>
@@ -138,11 +139,19 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         });
     }
 
-    public concat<O>(...others: Iterable<O>[]): Stream<T | O> {
+    public concat<O>(other: Iterable<O>): Stream<T | O> {
         const self = this;
         return Stream.iter(function* () {
             for (const value of self) yield value;
-            for (const other of others) for (const value of other) yield value;
+            for (const value of other) yield value;
+        });
+    }
+
+    public unShift<O>(other: Iterable<O>): Stream<T | O> {
+        const self = this;
+        return Stream.iter(function* () {
+            for (const value of other) yield value;
+            for (const value of self) yield value;
         });
     }
 
@@ -289,15 +298,45 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         return this.skipWhile((_, index) => index < usableCount);
     }
 
-    // TODO findIndex merge
+    public merge<O>(other: Iterable<O>): Stream<T | O> {
+        const self = this;
+        return Stream.iter(function* () {
+            const iterT = self[Symbol.iterator]();
+            const iterO = other[Symbol.iterator]();
+            let nextT;
+            let nextO;
 
-    // public merge<O>(other: Iterable<O>) : Stream<T | O> {
-    //     const self = this;
-    //     return iter(function * () {
-    //
-    //     });
-    // }
+            while (
+                and(!(nextT = iterT.next()).done, !(nextO = iterO.next()).done)
+            ) {
+                yield nextT.value;
+                yield nextO.value;
+            }
 
+            if (!nextT.done) {
+                do {
+                    yield nextT.value;
+                    nextT = iterT.next();
+                } while (!nextT.done);
+            } else if (!nextO.done) {
+                do {
+                    yield nextO.value;
+                    nextO = iterO.next();
+                } while (!nextO.done);
+            }
+        });
+    }
+
+    public findIndex(
+        test: (value: T, index: number, stream: this) => boolean
+    ): number | undefined {
+        let index = 0;
+        for (const value of this) {
+            if (test(value, index, this)) return index;
+            index++;
+        }
+        return undefined;
+    }
 
     public at(index: number | bigint): T | undefined {
         const usableIndex = BigInt(index);
@@ -312,7 +351,8 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         }
 
         if (isArray(this.enclosed)) return this.enclosed[Number(usableIndex)];
-        if (Stream.isStream(this.enclosed)) return this.bottomStream().at(index);
+        if (Stream.isStream(this.enclosed))
+            return this.bottomStream().at(index);
 
         let i = 0;
         for (const value of this) {
