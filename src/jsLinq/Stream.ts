@@ -1,4 +1,15 @@
-import { isArray, isSet, asSet, iter, setAndGet, at, any, last } from "./Utils";
+import {
+    isArray,
+    isSet,
+    asSet,
+    iter,
+    setAndGet,
+    at,
+    any,
+    last,
+    count,
+    isProbablyIterable,
+} from "./Utils";
 import { and } from "../utils/betterLogic";
 
 export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
@@ -37,7 +48,7 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         return new Stream(getCollection);
     }
 
-    public static iter<T>(getGenerator: () => Generator<T> = function* () {}) {
+    public static iter<T>(getGenerator: () => Generator<T>) {
         return new Stream(() => iter(getGenerator));
     }
 
@@ -423,5 +434,32 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
     public last(): T | undefined {
         return last(this.getDeepEnclosed());
     }
-}
 
+    public count(): number {
+        return count(this.getDeepEnclosed());
+    }
+
+    public flatten(): T extends Iterable<infer SubT>
+        ? Stream<SubT>
+        : Stream<any> {
+        const self = this;
+        // @ts-ignore
+        return Stream.iter(function* () {
+            for (const value of self) {
+                if (isProbablyIterable(value)) {
+                    const iter = value[Symbol.iterator]();
+                    let next;
+                    const nextGetter = iter.next;
+                    if (typeof nextGetter === "function") {
+                        next = nextGetter();
+                        const done = next?.done;
+                        if (done === false) {
+                            yield next.value;
+                            while (!(next = iter.next()).done) yield next.value;
+                        } else if (done !== true) yield value;
+                    } else yield value;
+                } else yield value;
+            }
+        });
+    }
+}

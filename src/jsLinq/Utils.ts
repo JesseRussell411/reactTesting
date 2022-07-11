@@ -20,6 +20,12 @@ export function iter<T>(
     };
 }
 
+export function protectIterable(iterable: Iterable<T>): Iterable<T> {
+    return iter(function* () {
+        for (const value of iterable) yield value;
+    });
+}
+
 export function tryGetLength(collection: Iterable<any>): number | undefined {
     if (isArray(collection)) return collection.length;
     if (isSet(collection)) return collection.size;
@@ -27,11 +33,15 @@ export function tryGetLength(collection: Iterable<any>): number | undefined {
     return undefined;
 }
 
-export function length(collection: Iterable<any>): number {
+export function count(collection: Iterable<any>): number {
     return (
         tryGetLength(collection) ??
         reduce(collection, (length, _) => length++, 0)
     );
+}
+
+export function isProbablyIterable(value: any): value is Iterable<any> {
+    return typeof (value as any)?.[Symbol.iterator] === "function";
 }
 
 export function isArray<T>(collection?: Iterable<T>): collection is T[] {
