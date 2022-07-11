@@ -291,12 +291,12 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
 
     // TODO findIndex merge
 
-    public merge<O>(other: Iterable<O>) : Stream<T | O> {
-        const self = this;
-        return iter(function * () {
-
-        });
-    }
+    // public merge<O>(other: Iterable<O>) : Stream<T | O> {
+    //     const self = this;
+    //     return iter(function * () {
+    //
+    //     });
+    // }
 
 
     public at(index: number | bigint): T | undefined {
