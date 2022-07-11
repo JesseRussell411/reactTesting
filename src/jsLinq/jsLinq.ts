@@ -743,6 +743,10 @@ const ll = Linqable.of([
     Linqable.of([4, 5]),
     Linqable.of([6, 7, 8, 9]),
 ]);
+
+
+
+
 console.log(1);
 
 const l = ll.reduce(
@@ -811,3 +815,14 @@ console.log(
         true
     )
 );
+
+const test:{things?:{stuff?:number}} = {things: {stuff:9}};
+
+const num = test.things!.stuff;
+
+
+
+
+const groups = Linqable.of(new Set([1,2,4,1,2,2,3,4,4,4])).map(num => num + 9).filter(num => num % 2 === 0).indexBy((num, index) => index);
+
+

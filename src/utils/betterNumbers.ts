@@ -1,93 +1,154 @@
-function combine<T>(
-    items: Iterable<T>,
-    combination: (previousResult: T, currentItem: T) => T
+import { combine } from "../jsLinq/new";
+
+function operation(
+    bigintOp: (a: bigint, b: bigint) => bigint,
+    numberOp: (a: number, b: number) => number,
+    number: bigint | number,
+    numbers: (number | bigint)[]
 ) {
-    const itemGenerator = items[Symbol.iterator]();
-    let nextItem = itemGenerator.next();
-    let result: T = nextItem.value;
-    while ((nextItem = itemGenerator.next()).done === false) {
-        result = combination(result, nextItem.value);
+    let result = number;
+
+    const generator = numbers[Symbol.iterator]();
+    let next;
+    if (typeof result === "bigint") {
+        while ((next = generator.next()).done === false) {
+            if (typeof next.value === "number") {
+                result = numberOp(Number(result), next.value);
+                break;
+            }
+            result = bigintOp(result, next.value);
+        }
+        return result;
     }
+
+    // NOTE: at this point result must be a number
+
+    while ((next = generator.next()).done === false) {
+        result = numberOp(result as number, Number(next.value));
+    }
+
     return result;
 }
 
-function divide(a: number | bigint, b: number | bigint): number | bigint {
-    if (typeof a === "number" || typeof b === "number") {
-        return Number(a) / Number(b);
-    } else {
-        return a / b;
-    }
+export function add(number: bigint, ...numbers: bigint[]): bigint;
+export function add(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): bigint;
+export function add(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): number | bigint {
+    return operation(
+        (a, b) => a + b,
+        (a, b) => a + b,
+        number,
+        numbers
+    );
 }
 
-function multiply(a: number | bigint, b: number | bigint): number | bigint {
-    if (typeof a === "number" || typeof b === "number") {
-        return Number(a) * Number(b);
-    } else {
-        return a * b;
-    }
+export function sub(number: bigint, ...numbers: bigint[]): bigint;
+export function sub(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): bigint;
+export function sub(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): number | bigint {
+    return operation(
+        (a, b) => a - b,
+        (a, b) => a - b,
+        number,
+        numbers
+    );
 }
 
-function additionify(a: number | bigint, b: number | bigint): number | bigint {
-    if (typeof a === "number" || typeof b === "number") {
-        return Number(a) + Number(b);
-    } else {
-        return a / b;
-    }
+export function mul(number: bigint, ...numbers: bigint[]): bigint;
+export function mul(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): bigint;
+export function mul(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): number | bigint {
+    return operation(
+        (a, b) => a * b,
+        (a, b) => a * b,
+        number,
+        numbers
+    );
 }
 
-function subtract(a: number | bigint, b: number | bigint): number | bigint {
-    if (typeof a === "number" || typeof b === "number") {
-        return Number(a) + Number(b);
-    } else {
-        return a + b;
-    }
+export function mod(number: bigint, ...numbers: bigint[]): bigint;
+export function mod(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): bigint;
+export function mod(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): number | bigint {
+    return operation(
+        (a, b) => a % b,
+        (a, b) => a % b,
+        number,
+        numbers
+    );
 }
 
-function modulusify(a: number | bigint, b: number | bigint): number | bigint {
-    if (typeof a === "number" || typeof b === "number") {
-        return Number(a) % Number(b);
-    } else {
-        return a % b;
-    }
-}
+export function div(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): number | bigint {
+    let result = number;
 
-export function idiv(...numbers: (number | bigint)[]): number | bigint {
-    const itemGenerator = numbers[Symbol.iterator]();
-    let nextItem = itemGenerator.next();
-    let result: T = BigInt(nextItem.value);
-
-    while ((nextItem = itemGenerator.next()).done === false) {
-        result = result / BigInt(nextItem.value);
+    const generator = numbers[Symbol.iterator]();
+    let next;
+    if (typeof result === "bigint") {
+        while ((next = generator.next()).done === false) {
+            if (typeof next.value === "number") {
+                result = Number(result) / next.value;
+                break;
+            }
+            if (result % next.value !== 0n) {
+                result = Number(result) / Number(next.value);
+                break;
+            }
+            result = result / next.value;
+        }
+        return result;
     }
+    // NOTE: at this point result must be a number
+
+    while ((next = generator.next()).done === false) {
+        result = (result as number) / Number(next.value);
+    }
+
     return result;
 }
 
-export function div(...numbers: (number | bigint)[]): number | bigint {
-    return combine(numbers, divide);
-}
-
-export function mul(...numbers: (number | bigint)[]): number | bigint {
-    return combine(numbers, multiply);
-}
-
-export function add(...numbers: (number | bigint)[]): number | bigint {
-    return combine(numbers, additionify);
-}
-
-export function sub(...numbers: (number | bigint)[]): number | bigint {
-    return combine(numbers, subtract);
-}
-
-export function mod(...numbers: (number | bigint)[]): number | bigint {
-    return combine(numbers, modulusify);
-}
-
-export function eq(a: number | bigint, b: number | bigint): boolean {
-    if (typeof a === "number" || typeof b === "number") {
-        return Number(a) === Number(b);
+export function compare(a: number | bigint, b: number | bigint): number {
+    if (typeof a === "number") {
+        return a - Number(b);
+    } else if (typeof b === "number") {
+        return Number(a) - b;
     } else {
-        return a === b;
+        const comp = a - b;
+        if (comp > 0) return 1;
+        if (comp < 0) return -1;
+        return 0;
     }
+}
+export function eq(
+    number: number | bigint,
+    ...numbers: (number | bigint)[]
+): boolean {
+    for (const num of numbers) {
+        if (compare(number, num) !== 0) return false;
+    }
+    return true;
 }
 
 export function gt(a: number | bigint, b: number | bigint): boolean {
@@ -122,13 +183,37 @@ export function lte(a: number | bigint, b: number | bigint): boolean {
     }
 }
 
-export function isWhole(number: number | bigint){
-    return (typeof number === "bigint") || Math.trunc(number) === number;
+export function isWhole(number: number | bigint) {
+    return typeof number === "bigint" || Math.trunc(number) === number;
 }
 
-const rangeSize = 6
-let size:number | bigint = 3;
+export function floor(number: number | bigint): bigint {
+    if (typeof number === "number") return BigInt(Math.floor(number));
+    return number;
+}
 
-const wholeSliceCount = idiv(rangeSize, size);
-const rem = mod(rangeSize % size);
+export function ceil(number: number | bigint): bigint {
+    if (typeof number === "number") return BigInt(Math.ceil(number));
+    return number;
+}
 
+export function trunc(number: number | bigint): bigint {
+    if (typeof number === "number") return BigInt(Math.trunc(number));
+    return number;
+}
+
+export function sign(number: number | bigint): bigint {
+    if (lt(number, 0n)) return -1n;
+    if (gt(number, 0n)) return 1n;
+    return 0n;
+}
+
+export function abs(number: number): number;
+export function abs(number: bigint): bigint;
+export function abs(number: number | bigint): number | bigint;
+
+export function abs(number: number | bigint) {
+    if (typeof number === "number") return Math.abs(number);
+    if (number < 0n) return -number;
+    return number;
+}
