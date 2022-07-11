@@ -39,7 +39,7 @@ export function count(collection: Iterable<any>): number {
     );
 }
 
-export function isProbablyIterable(value: any): value is Iterable<any> {
+export function isIterable(value: any): value is Iterable<any> {
     return typeof (value as any)?.[Symbol.iterator] === "function";
 }
 

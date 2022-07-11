@@ -7,7 +7,7 @@ import {
     at,
     last,
     count,
-    isProbablyIterable,
+    isIterable,
 } from "./Utils";
 import { and } from "../utils/betterLogic";
 
@@ -440,21 +440,14 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
 
     public flat(): T extends Iterable<infer SubT> ? Stream<SubT> : Stream<any> {
         const self = this;
-        // @ts-ignore
         return Stream.iter(function* () {
             for (const value of self) {
-                if (isProbablyIterable(value)) {
-                    const iter = value[Symbol.iterator]();
-                    let next;
-                    let nextGetter: any;
-                    while (
-                        typeof (nextGetter = iter?.next) === "function" &&
-                        (next = nextGetter())?.done === false
-                    ) {
-                        yield next?.value;
-                    }
-                } else yield value;
+                if (isIterable(value)) {
+                    for (const subValue of value) yield subValue;
+                } else {
+                    yield value;
+                }
             }
-        });
+        }) as any;
     }
 }
