@@ -35,8 +35,7 @@ export function tryGetLength(collection: Iterable<any>): number | undefined {
 
 export function count(collection: Iterable<any>): number {
     return (
-        tryGetLength(collection) ??
-        reduce(collection, (length, _) => length++, 0)
+        tryGetLength(collection) ?? reduce(collection, (length) => length++, 0)
     );
 }
 

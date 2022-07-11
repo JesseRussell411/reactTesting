@@ -5,7 +5,6 @@ import {
     iter,
     setAndGet,
     at,
-    any,
     last,
     count,
     isProbablyIterable,
@@ -439,9 +438,7 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         return count(this.getDeepEnclosed());
     }
 
-    public flatten(): T extends Iterable<infer SubT>
-        ? Stream<SubT>
-        : Stream<any> {
+    public flat(): T extends Iterable<infer SubT> ? Stream<SubT> : Stream<any> {
         const self = this;
         // @ts-ignore
         return Stream.iter(function* () {
@@ -449,15 +446,13 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
                 if (isProbablyIterable(value)) {
                     const iter = value[Symbol.iterator]();
                     let next;
-                    const nextGetter = iter.next;
-                    if (typeof nextGetter === "function") {
-                        next = nextGetter();
-                        const done = next?.done;
-                        if (done === false) {
-                            yield next.value;
-                            while (!(next = iter.next()).done) yield next.value;
-                        } else if (done !== true) yield value;
-                    } else yield value;
+                    let nextGetter: any;
+                    while (
+                        typeof (nextGetter = iter?.next) === "function" &&
+                        (next = nextGetter())?.done === false
+                    ) {
+                        yield next?.value;
+                    }
                 } else yield value;
             }
         });
