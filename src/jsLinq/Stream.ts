@@ -1,33 +1,28 @@
-import { isArray, isSet, asSet, iter, setAndGet } from "./Utils";
-import { Linqable } from "./jsLinq";
+import { isArray, isSet, asSet, iter, setAndGet, at, any, last } from "./Utils";
 import { and } from "../utils/betterLogic";
 
 export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
     implements Iterable<T>
 {
-    private _enclosed: Enclosed | undefined = undefined;
-    private getEnclosed: (() => Enclosed) | undefined;
+    public readonly getEnclosed: () => Enclosed;
+
+    /** In the case of Streams enclosing Streams enclosing Streams... This returns the bottom most enclosed iterable. */
+    public getDeepEnclosed() {
+        let current: Iterable<T> = this.getEnclosed();
+        while (Stream.isStream(current)) current = current.getEnclosed();
+        return current;
+    }
 
     public constructor(getEnclosed: () => Enclosed & Iterable<T>) {
         this.getEnclosed = getEnclosed;
     }
 
-    public get enclosed() {
-        if (this._enclosed === undefined) {
-            this._enclosed = this.getEnclosed!();
-            // help the garbage collector
-            this.getEnclosed = undefined;
-        }
-
-        return this._enclosed;
-    }
-
     [Symbol.iterator](): Iterator<T> {
-        return this.enclosed[Symbol.iterator]();
+        return this.getEnclosed()[Symbol.iterator]();
     }
 
     public static empty<T>() {
-        return new Stream<T, T[]>(() => []);
+        return new Stream<T>(() => iter());
     }
 
     public static of<T, Enclosed extends Iterable<T>>(
@@ -42,8 +37,8 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         return new Stream(getCollection);
     }
 
-    public static iter<T>(getGenerator: () => Generator<T>) {
-        return new Stream(() => ({ [Symbol.iterator]: getGenerator }));
+    public static iter<T>(getGenerator: () => Generator<T> = function* () {}) {
+        return new Stream(() => iter(getGenerator));
     }
 
     public static isStream<T>(iterable: Iterable<T>): iterable is Stream<T> {
@@ -55,28 +50,16 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         return this.of(iterable);
     }
 
-    public hasSet(): this is Stream<T, Set<T>> {
-        return isSet(this.enclosed);
-    }
-
-    public hasArray(): this is Stream<T, T[]> {
-        return isArray(this.enclosed);
-    }
-
-    public hasStream(): this is Stream<T, Stream<T>> {
-        return Stream.isStream(this.enclosed);
-    }
-
     public asSet(): Set<T> {
-        if (this.hasSet()) return this.enclosed;
-        if (this.hasStream()) return this.bottomStream().asSet();
-        return new Set(this);
+        const enclosed = this.getDeepEnclosed();
+        if (isSet(enclosed)) return enclosed;
+        return new Set(enclosed);
     }
 
     public asArray(): T[] {
-        if (this.hasArray()) return this.enclosed;
-        if (this.hasStream()) return this.bottomStream().asArray();
-        return [...this];
+        const enclosed = this.getDeepEnclosed();
+        if (isArray(enclosed)) return enclosed;
+        return [...enclosed];
     }
 
     public toSet(): Set<T> {
@@ -103,13 +86,6 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         return result;
     }
 
-    /** In the case of Streams enclosing Streams enclosing Streams... This returns the bottom most Stream. */
-    public bottomStream() {
-        let current: Stream<T> = this;
-        while (Stream.isStream(current.enclosed)) current = current.enclosed;
-        return current;
-    }
-
     public forEach(
         callback: (value: T, index: number, stream: this) => void
     ): this {
@@ -130,7 +106,7 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
 
     public filter(
         test: (value: T, index: number, stream: this) => boolean
-    ): Stream<R> {
+    ): Stream<T> {
         const self = this;
         return Stream.iter(function* () {
             let index = 0;
@@ -157,24 +133,23 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
 
     public groupBy<K>(
         keySelector: (value: T, index: number, stream: this) => K
-    ): Stream<{ key: K; values: Stream<T, T[]> }> {
+    ): Stream<[K, Stream<T, T[]>], Map<K, Stream<T, T[]>>> {
         const self = this;
-        return Stream.iter(function* () {
-            const groups = new Map<K, T[]>();
-
+        return Stream.lazyOf(() => {
+            const groups = new Map<K, Stream<T, T[]>>();
             let index = 0;
             for (const value of self) {
                 const key = keySelector(value, index++, self);
-                const group = groups.get(key) ?? setAndGet(groups, key, []);
-                group.push(value);
+                const group =
+                    groups.get(key) ?? setAndGet(groups, key, Stream.of([]));
+                group.getEnclosed().push(value);
             }
 
-            for (const group of groups)
-                yield { key: group[0], values: Stream.of(group[1]) };
+            return groups;
         });
     }
 
-    public reverse() {
+    public reverse(): Stream<T> {
         const self = this;
         return Stream.iter(function* () {
             const array = self.asArray();
@@ -248,12 +223,12 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
         });
     }
 
-    public sorted(comparator?: (a: T, b: T) => number): Stream<T> {
+    public sorted(comparator?: (a: T, b: T) => number): Stream<T, T[]> {
         const self = this;
-        return Stream.iter(function* () {
+        return Stream.lazyOf(() => {
             const sorted = self.toArray();
             sorted.sort(comparator);
-            for (const value of sorted) yield value;
+            return sorted;
         });
     }
 
@@ -339,26 +314,7 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
     }
 
     public at(index: number | bigint): T | undefined {
-        const usableIndex = BigInt(index);
-        if (usableIndex < 0) {
-            if (isArray(this.enclosed))
-                return this.enclosed[
-                    this.enclosed.length - Number(usableIndex)
-                ];
-            if (Stream.isStream(this.enclosed))
-                return this.bottomStream().at(usableIndex);
-            return this.reverse().at(-usableIndex - 1n);
-        }
-
-        if (isArray(this.enclosed)) return this.enclosed[Number(usableIndex)];
-        if (Stream.isStream(this.enclosed))
-            return this.bottomStream().at(index);
-
-        let i = 0;
-        for (const value of this) {
-            if (i++ >= usableIndex) return value;
-        }
-        return undefined;
+        return at(this.getDeepEnclosed(), index);
     }
 
     public reduce<R>(
@@ -442,12 +398,13 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
     }
 
     public includes(value: T): boolean {
-        if (this.hasArray()) return this.enclosed.includes(value);
-        if (this.hasSet()) return this.enclosed.has(value);
-        if (Stream.isStream(this.enclosed))
-            return this.bottomStream().includes(value);
+        const enclosed = this.getDeepEnclosed();
+        if (isArray(enclosed)) return enclosed.includes(value);
+        if (isSet(enclosed)) return enclosed.has(value);
 
-        return this.any((enclosedValue) => Object.is(value, enclosedValue));
+        for (const enclosedValue of enclosed)
+            if (Object.is(value, enclosedValue)) return true;
+        return false;
     }
 
     public find(
@@ -464,11 +421,7 @@ export class Stream<T, Enclosed extends Iterable<T> = Iterable<T>>
     }
 
     public last(): T | undefined {
-        if (this.hasArray()) return this.enclosed[this.enclosed.length - 1];
-        if (this.hasStream()) return this.bottomStream().last();
-
-        let result = undefined;
-        for (const value of this) result = value;
-        return result;
+        return last(this.getDeepEnclosed());
     }
 }
+

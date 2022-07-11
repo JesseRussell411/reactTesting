@@ -12,7 +12,9 @@ export type EntryLikeValueOnly<V> =
     | [any, V, ...any]
     | { 1: V; [key: ObjectKey]: any };
 
-export function iter<T>(generatorGetter: () => Generator<T>): Iterable<T> {
+export function iter<T>(
+    generatorGetter: () => Generator<T> = function* () {}
+): Iterable<T> {
     return {
         [Symbol.iterator]: generatorGetter,
     };
@@ -409,9 +411,13 @@ export function at<T>(collection: Iterable<T>, index: number | bigint) {
         return array[array.length + Number(index_whole)];
     }
 
-    let i = 0;
+    if (isArray(collection)) {
+        return collection[Number(index_whole)];
+    }
+
+    let i = 0n;
     for (const value of collection) {
-        if (i++ >= index) return value;
+        if (i++ >= index_whole) return value;
     }
 
     return undefined;
@@ -458,7 +464,7 @@ export function none<T>(
     return true;
 }
 
-export function skip(collection: Iterable<T>, count: number | bigint) {
+export function skip<T>(collection: Iterable<T>, count: number | bigint) {
     const count_whole = abs(BigInt(count));
     return iter(function* () {
         const generator = collection[Symbol.iterator]();
@@ -474,7 +480,7 @@ export function skip(collection: Iterable<T>, count: number | bigint) {
     });
 }
 
-export function skipWhile(
+export function skipWhile<T>(
     collection: Iterable<T>,
     test: (value: T) => boolean
 ) {
@@ -495,7 +501,7 @@ export function skipWhile(
     });
 }
 
-export function take(collection: Iterable<T>, count: number | bigint) {
+export function take<T>(collection: Iterable<T>, count: number | bigint) {
     const count_whole = abs(BigInt(count));
     return iter(function* () {
         const generator = collection[Symbol.iterator]();
@@ -507,7 +513,7 @@ export function take(collection: Iterable<T>, count: number | bigint) {
     });
 }
 
-export function takeWhile(
+export function takeWhile<T>(
     collection: Iterable<T>,
     test: (value: T) => boolean
 ) {
@@ -613,25 +619,31 @@ export function without<T>(collection: Iterable<T>, dontInclude: Iterable<T>) {
     });
 }
 
-export function join<T>(collection: Iterable<T>, separator: string, toString: (value:T) => string = (value) => `${value}`){
+export function join<T>(
+    collection: Iterable<T>,
+    separator: string,
+    toString: (value: T) => string = (value) => `${value}`
+) {
     let stringBuilder = [] as string[];
     const gen = collection[Symbol.iterator]();
     let next = gen.next();
     if (next.done) return "";
     stringBuilder.push(toString(next.value));
-    while((next = gen.next()).done === false){
+    while ((next = gen.next()).done === false) {
         stringBuilder.push(separator);
         stringBuilder.push(toString(next.value));
     }
     return stringBuilder.join();
 }
 
-export function findIndex<T>(collection: Iterable<T>, test: (value: T) => boolean){
+export function findIndex<T>(
+    collection: Iterable<T>,
+    test: (value: T) => boolean
+) {
     let index = 0;
-    for(const value of collection){
+    for (const value of collection) {
         if (test(value)) return index;
         index++;
     }
     return -1;
 }
-

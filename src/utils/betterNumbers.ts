@@ -1,5 +1,3 @@
-import { combine } from "../jsLinq/new";
-
 function operation(
     bigintOp: (a: bigint, b: bigint) => bigint,
     numberOp: (a: number, b: number) => number,
